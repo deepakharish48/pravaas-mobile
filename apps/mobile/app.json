@@ -18,6 +18,9 @@
         "backgroundColor": "#2563eb"
       },
       "package": "com.pravaas.mobile"
-    }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
