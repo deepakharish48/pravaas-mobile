@@ -1,0 +1,9 @@
+node_modules
+dist
+.turbo
+.expo
+*.log
+.env
+.env.local
+apps/api/uploads/*
+!apps/api/uploads/.gitkeep

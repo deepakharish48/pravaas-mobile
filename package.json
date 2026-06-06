@@ -1,0 +1,33 @@
+{
+  "name": "pravaas",
+  "private": true,
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:api": "pnpm --filter @pravaas/api dev",
+    "dev:mobile": "pnpm --filter @pravaas/mobile dev",
+    "dev:hotel": "pnpm --filter @pravaas/hotel dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "postinstall": "pnpm db:generate",
+    "db:generate": "turbo run db:generate",
+    "db:push": "turbo run db:push",
+    "db:migrate": "pnpm --filter @pravaas/api db:migrate",
+    "db:migrate:deploy": "pnpm --filter @pravaas/api db:migrate:deploy",
+    "db:seed": "pnpm --filter @pravaas/api db:seed",
+    "db:reset": "pnpm --filter @pravaas/api db:reset",
+    "db:studio": "pnpm --filter @pravaas/api db:studio",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

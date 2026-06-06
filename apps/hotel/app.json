@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Pravaas Hotel",
+    "slug": "pravaas-hotel",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "pravaas-hotel",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pravaas.hotel"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f172a"
+      },
+      "package": "com.pravaas.hotel"
+    }
+  }
+}
