@@ -32,9 +32,34 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   hydrate: async () => {
-    const token = await SecureStore.getItemAsync(TOKEN_KEY);
-    const userJson = await SecureStore.getItemAsync(USER_KEY);
-    const user = userJson ? (JSON.parse(userJson) as User) : null;
-    set({ token, user, isHydrated: true });
+    try {
+      console.log("HYDRATE START");
+  
+      const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      const userJson = await SecureStore.getItemAsync(USER_KEY);
+  
+      console.log("TOKEN =", token);
+      console.log("USER =", userJson);
+  
+      const user = userJson
+        ? JSON.parse(userJson)
+        : null;
+  
+      console.log("HYDRATE SUCCESS");
+  
+      set({
+        token,
+        user,
+        isHydrated: true,
+      });
+    } catch (err) {
+      console.error("HYDRATE ERROR", err);
+  
+      set({
+        token: null,
+        user: null,
+        isHydrated: true,
+      });
+    }
   },
-}));
+}))

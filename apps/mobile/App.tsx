@@ -6,14 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppNavigator } from "./src/navigation/AppNavigator";
 import { ApiProvider } from "./src/providers/ApiProvider";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 30_000,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export default function App() {
   return (
@@ -29,3 +22,35 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+/*import React from "react";
+import { View, Text } from "react-native";
+
+export default function App() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>React Native Works</Text>
+    </View>
+  );
+}*/
+/*import React from "react";
+import { View, Text } from "react-native";
+
+export default function App() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>Hello</Text>
+    </View>
+  );
+}*/

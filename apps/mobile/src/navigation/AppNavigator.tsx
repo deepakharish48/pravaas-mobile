@@ -15,7 +15,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function AppNavigator() {
   const { token, isHydrated, hydrate } = useAuthStore();
 
+  console.log("APP NAVIGATOR", {
+    token,
+    isHydrated,
+  });
+
   useEffect(() => {
+    console.log("CALLING HYDRATE");
     hydrate();
   }, [hydrate]);
 
