@@ -34,6 +34,7 @@ export function Screen({ title, subtitle, children, style }: ScreenProps) {
   );
 }
 
+
 const styles = StyleSheet.create({
   flex: {
     flex: 1,

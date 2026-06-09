@@ -46,6 +46,7 @@ export function HomeScreen({ navigation }: Props) {
 
   return (
     <Screen
+      //scrollable={false}
       title={`Hello, ${user?.name?.split(" ")[0] ?? "Guest"}`}
       subtitle="Your hotel bookings"
     >
