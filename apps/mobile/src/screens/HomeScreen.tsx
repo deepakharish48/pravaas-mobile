@@ -55,6 +55,12 @@ export function HomeScreen({ navigation }: Props) {
         onPress={() => navigation.navigate("UploadBooking")}
         style={styles.uploadButton}
       />
+      <Button
+        title="Identity Wallet"
+        variant="outline"
+        onPress={() => navigation.navigate("IdentityWallet")}
+        style={{ marginBottom: 16 }}
+     />
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#2563eb" style={styles.loader} />

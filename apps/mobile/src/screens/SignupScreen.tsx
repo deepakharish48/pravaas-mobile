@@ -6,6 +6,7 @@ import { useSignup } from "@pravaas/api-client";
 import { useApiClient } from "../providers/ApiProvider";
 import { useAuthStore } from "../store/authStore";
 import type { AuthStackParamList } from "../navigation/AuthNavigator";
+import type { AuthResponse } from "@pravaas/types";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Signup">;
 
@@ -17,10 +18,10 @@ export function SignupScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
 
   const signup = useSignup(client, {
-    onSuccess: async (data) => {
+    onSuccess: async (data: AuthResponse) => {
       await setAuth(data.accessToken, data.user);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       Alert.alert("Signup failed", error.message || "Could not create account");
     },
   });

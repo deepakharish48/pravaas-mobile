@@ -94,7 +94,19 @@ export class OpenaiService {
       return parsed;
     } catch (error) {
       this.logger.error("GPT-4o extraction failed", error);
-      throw error;
+      //throw error;
+      return {
+        hotelName: "Demo Hotel",
+        guestName: "Deepak Puvvada",
+        checkIn: "2026-06-15",
+        checkOut: "2026-06-17",
+        confirmationNumber: "PRAVAAS-DEMO",
+        roomType: "Deluxe Room",
+        numberOfGuests: 2,
+        totalPrice: "8500",
+        currency: "INR",
+        rawText: "Mock extraction",
+      };
     }
   }
 

@@ -6,6 +6,7 @@ import { Button, Screen } from "@pravaas/ui";
 import { useUploadBooking } from "@pravaas/api-client";
 import { useApiClient } from "../providers/ApiProvider";
 import type { MainStackParamList } from "../navigation/MainNavigator";
+import type { Booking } from "@pravaas/types";
 
 type Props = NativeStackScreenProps<MainStackParamList, "UploadBooking">;
 
@@ -15,7 +16,7 @@ export function UploadBookingScreen({ navigation }: Props) {
   const [fileName, setFileName] = useState("booking.jpg");
 
   const upload = useUploadBooking(client, {
-    onSuccess: (booking) => {
+    onSuccess: (booking: Booking) => {
       Alert.alert("Success", "Booking extracted and saved!", [
         {
           text: "View Details",
@@ -24,7 +25,7 @@ export function UploadBookingScreen({ navigation }: Props) {
         },
       ]);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       Alert.alert("Upload failed", error.message || "Could not process booking");
     },
   });
