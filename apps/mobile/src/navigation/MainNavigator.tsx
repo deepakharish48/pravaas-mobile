@@ -3,12 +3,17 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { UploadBookingScreen } from "../screens/UploadBookingScreen";
 import { BookingDetailsScreen } from "../screens/BookingDetailsScreen";
 import { QrCodeScreen } from "../screens/QrCodeScreen";
+import { ProfileScreen } from "../screens/ProfileScreen";
+import { IdentityWalletScreen } from "../screens/IdentityWalletScreen";
+
 
 export type MainStackParamList = {
   Home: undefined;
   UploadBooking: undefined;
   BookingDetails: { bookingId: string };
   QrCode: { bookingId: string };
+  Profile: undefined;
+  IdentityWallet: undefined;
 };
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -41,6 +46,16 @@ export function MainNavigator() {
         name="QrCode"
         component={QrCodeScreen}
         options={{ title: "Check-in QR" }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: "Profile" }}
+      />
+      <Stack.Screen
+        name="IdentityWallet"
+        component={IdentityWalletScreen}
+        options={{ title: "Identity Wallet" }}
       />
     </Stack.Navigator>
   );

@@ -6,6 +6,7 @@ import { useLogin } from "@pravaas/api-client";
 import { useApiClient } from "../providers/ApiProvider";
 import { useAuthStore } from "../store/authStore";
 import type { AuthStackParamList } from "../navigation/AuthNavigator";
+import type { AuthResponse } from "@pravaas/types";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
@@ -16,10 +17,10 @@ export function LoginScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
 
   const login = useLogin(client, {
-    onSuccess: async (data) => {
+    onSuccess: async (data: AuthResponse) => {
       await setAuth(data.accessToken, data.user);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       Alert.alert("Login failed", error.message || "Invalid credentials");
     },
   });
