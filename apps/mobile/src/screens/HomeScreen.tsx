@@ -56,6 +56,12 @@ export function HomeScreen({ navigation }: Props) {
         style={styles.uploadButton}
       />
       <Button
+        title="My Profile"
+        variant="secondary"
+        onPress={() => navigation.navigate("Profile")}
+        style={{ marginBottom: 12 }}
+     />
+      <Button
         title="Identity Wallet"
         variant="outline"
         onPress={() => navigation.navigate("IdentityWallet")}
