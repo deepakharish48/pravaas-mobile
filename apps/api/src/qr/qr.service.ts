@@ -15,11 +15,9 @@ export class QrService {
     });
   }
 
-  buildBookingPayload(bookingId: string, confirmationNumber?: string | null) {
+  buildBookingPayload(data: Record<string, any>) {
     return JSON.stringify({
-      type: "pravaas_booking",
-      bookingId,
-      confirmationNumber: confirmationNumber ?? null,
+      ...data,
       timestamp: new Date().toISOString(),
     });
   }

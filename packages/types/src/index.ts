@@ -61,8 +61,48 @@ export interface QrCodeResponse {
   qrCodeDataUrl: string;
   payload: string;
 }
+export type DocumentType =
+  | "PASSPORT"
+  | "AADHAAR"
+  | "DRIVING_LICENSE"
+  | "VISA";
+
+export type VerificationStatus =
+  | "PENDING"
+  | "VERIFIED"
+  | "REJECTED";
+
+export interface IdentityDocument {
+  id: string;
+  userId: string;
+
+  documentType: DocumentType;
+
+  documentNumber: string | null;
+  fullName: string | null;
+  nationality: string | null;
+
+  dateOfBirth: string | null;
+  expiryDate: string | null;
+
+  imagePath: string;
+
+  verificationStatus: VerificationStatus;
+
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface ApiError {
   message: string;
   statusCode: number;
+}
+
+export interface IdentityExtraction {
+  documentType: DocumentType;
+  documentNumber: string | null;
+  fullName: string | null;
+  nationality: string | null;
+  dateOfBirth: string | null;
+  expiryDate: string | null;
 }

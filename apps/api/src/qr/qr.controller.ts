@@ -31,12 +31,65 @@ export class QrController {
       throw new NotFoundException("Booking not found");
     }
 
-    const payload = this.qrService.buildBookingPayload(
-      booking.id,
+    const documents =
+  await this.prisma.identityDocument.findMany({
+    where: {
+      userId: req.user.id,
+    },
+  });
+
+const identity =
+  documents.find(
+    (d) => d.documentType === "AADHAAR",
+  ) ??
+  documents.find(
+    (d) => d.documentType === "PASSPORT",
+  ) ??
+  documents.find(
+    (d) =>
+      d.documentType ===
+      "DRIVING_LICENSE",
+  ) ??
+  null;
+
+const payload =
+  this.qrService.buildBookingPayload({
+    type: "pravaas_checkin",
+
+    bookingId: booking.id,
+
+    hotelName:
+      booking.hotelName,
+
+    guestName:
+      booking.guestName,
+
+    confirmationNumber:
       booking.confirmationNumber,
-    );
+
+    checkIn:
+      booking.checkIn,
+
+    checkOut:
+      booking.checkOut,
+
+    identityType:
+      identity?.documentType ??
+      null,
+
+    identityName:
+      identity?.fullName ??
+      null,
+
+    identityNumber:
+      identity?.documentNumber ??
+      null,
+  });
 
     const qrCodeDataUrl =
+      await this.qrService.generateQrCode(payload);
+
+    /*const qrCodeDataUrl =
       booking.qrCode ?? (await this.qrService.generateQrCode(payload));
 
     if (!booking.qrCode) {
@@ -44,7 +97,7 @@ export class QrController {
         where: { id: bookingId },
         data: { qrCode: qrCodeDataUrl },
       });
-    }
+    }*/
 
     return {
       bookingId: booking.id,

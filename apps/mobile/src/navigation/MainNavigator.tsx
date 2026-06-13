@@ -29,6 +29,7 @@ export function MainNavigator() {
     >
       <Stack.Screen
         name="Home"
+        //component={() => null}
         component={HomeScreen}
         options={{ title: "My Bookings" }}
       />

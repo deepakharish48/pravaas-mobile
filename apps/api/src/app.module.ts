@@ -6,6 +6,7 @@ import { HealthModule } from "./health/health.module";
 import { OpenaiModule } from "./openai/openai.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QrModule } from "./qr/qr.module";
+import { IdentityModule } from "./identity/identity.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { QrModule } from "./qr/qr.module";
     OpenaiModule,
     BookingModule,
     QrModule,
+    IdentityModule,
   ],
 })
 export class AppModule {}

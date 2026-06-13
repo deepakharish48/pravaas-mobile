@@ -90,10 +90,18 @@ export class BookingService {
       },
     });
 
-    const payload = this.qrService.buildBookingPayload(
+    /*const payload = this.qrService.buildBookingPayload(
       booking.id,
       booking.confirmationNumber,
-    );
+    );*/
+    const payload = this.qrService.buildBookingPayload({
+    type: "pravaas_booking",
+
+    bookingId: booking.id,
+
+    confirmationNumber:
+      booking.confirmationNumber,
+  });
     const qrCodeDataUrl = await this.qrService.generateQrCode(payload);
 
     const updated = await this.prisma.booking.update({

@@ -4,6 +4,7 @@ import type {
   LoginRequest,
   QrCodeResponse,
   SignupRequest,
+  IdentityDocument,
 } from "@pravaas/types";
 
 export interface ApiClientConfig {
@@ -25,6 +26,13 @@ export class ApiClient {
     options: RequestInit = {},
   ): Promise<T> {
     const token = this.getToken?.();
+
+    console.log("API REQUEST", {
+      path,
+      hasToken: !!token,
+      tokenStart: token?.slice(0, 20),
+    });
+    
     const headers: Record<string, string> = {
       ...(options.headers as Record<string, string>),
     };
@@ -103,5 +111,30 @@ export class ApiClient {
 
   getBookingQr(id: string): Promise<QrCodeResponse> {
     return this.request<QrCodeResponse>(`/qr/${id}`);
+  }
+
+  getIdentityDocuments(): Promise<IdentityDocument[]> {
+    return this.request<IdentityDocument[]>("/identity");
+  }
+  
+  uploadIdentityDocument(
+    uri: string,
+    fileName: string,
+  ): Promise<IdentityDocument> {
+    const formData = new FormData();
+  
+    formData.append("file", {
+      uri,
+      name: fileName,
+      type: "image/jpeg",
+    } as unknown as Blob);
+  
+    return this.request<IdentityDocument>(
+      "/identity/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
   }
 }
