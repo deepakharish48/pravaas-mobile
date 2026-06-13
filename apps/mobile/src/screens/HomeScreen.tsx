@@ -14,14 +14,39 @@ import type { Booking } from "@pravaas/types";
 import { useApiClient } from "../providers/ApiProvider";
 import { useAuthStore } from "../store/authStore";
 import type { MainStackParamList } from "../navigation/MainNavigator";
+import { useQuery } from "@tanstack/react-query";
+//import { useBookings } from "../../../packages/api-client/src/hooks";
 
 type Props = NativeStackScreenProps<MainStackParamList, "Home">;
 
 export function HomeScreen({ navigation }: Props) {
+  console.log("HOME RENDER START");
   const client = useApiClient();
+  console.log("BEFORE USEBOOKINGS");
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const { data: bookings, isLoading, refetch, isRefetching } = useBookings(client);
+  //const { data: bookings, isLoading, refetch, isRefetching } = useBookings(client);
+  const {
+    data: bookings,
+    isLoading,
+    error,
+    status,
+    refetch,
+    isRefetching,
+  } = useBookings(client);
+  
+  console.log("BOOKINGS QUERY", {
+    status,
+    isLoading,
+    bookings,
+    error,
+  });
+  //console.log("TEST QUERY", testQuery.status);
+  //console.log("AFTER USEBOOKINGS");
+  //const bookings: any[] = [];
+  //const isLoading = false;
+  //const isRefetching = false;
+  //const refetch = async () => {};
 
   const renderItem = ({ item }: { item: Booking }) => (
     <Pressable

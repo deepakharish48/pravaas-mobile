@@ -59,6 +59,7 @@ model IdentityDocument {
   expiryDate         DateTime?
 
   imagePath          String
+  rawExtractedData   String?
 
   verificationStatus VerificationStatus @default(PENDING)
 

@@ -11,12 +11,14 @@ import type {
   LoginRequest,
   QrCodeResponse,
   SignupRequest,
+  IdentityDocument,
 } from "@pravaas/types";
 import type { ApiClient } from "./client";
 
 export const queryKeys = {
   profile: ["profile"] as const,
   bookings: ["bookings"] as const,
+  identity: ["identity"] as const,
   booking: (id: string) => ["bookings", id] as const,
   qr: (id: string) => ["qr", id] as const,
 };
@@ -95,7 +97,7 @@ export function useUploadBooking(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uri, fileName }) =>
+    mutationFn: ({ uri, fileName }: { uri: string; fileName: string }) =>
       client.uploadBookingScreenshot(uri, fileName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings });
@@ -115,5 +117,42 @@ export function useBookingQr(
     queryFn: () => client.getBookingQr(id),
     enabled: enabled && !!id,
     ...options,
+  });
+  
+}
+export function useIdentityDocuments(
+  client: ApiClient,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: queryKeys.identity,
+    queryFn: () => client.getIdentityDocuments(),
+    enabled,
+  });
+}
+
+export function useUploadIdentity(
+  client: ApiClient,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      uri,
+      fileName,
+    }: {
+      uri: string;
+      fileName: string;
+    }) =>
+      client.uploadIdentityDocument(
+        uri,
+        fileName,
+      ),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.identity,
+      });
+    },
   });
 }
