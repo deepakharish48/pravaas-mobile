@@ -1,6 +1,30 @@
 import { Injectable } from "@nestjs/common";
 import * as QRCode from "qrcode";
 
+export type BookingPayload = {
+  version: number;
+
+  type: "pravaas_checkin";
+
+  bookingId: string;
+
+  hotelName: string | null;
+
+  guestName: string | null;
+
+  confirmationNumber: string | null;
+
+  checkIn: Date | null;
+
+  checkOut: Date | null;
+
+  identityType: string | null;
+
+  identityName: string | null;
+
+  identityNumber: string | null;
+};
+
 @Injectable()
 export class QrService {
   async generateQrCode(payload: string): Promise<string> {
@@ -15,9 +39,9 @@ export class QrService {
     });
   }
 
-  buildBookingPayload(data: Record<string, any>) {
+  buildBookingPayload(payload: BookingPayload): string {
     return JSON.stringify({
-      ...data,
+      ...payload,
       timestamp: new Date().toISOString(),
     });
   }

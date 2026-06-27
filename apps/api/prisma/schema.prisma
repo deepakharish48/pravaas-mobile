@@ -8,63 +8,76 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String             @id @default(uuid())
+  email     String             @unique
   password  String
   name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
   bookings  Booking[]
   documents IdentityDocument[]
 }
 
 model Booking {
   id                 String        @id @default(uuid())
-  userId             String
-  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  imagePath          String
-  hotelName          String?
-  guestName          String?
-  checkIn            DateTime?
-  checkOut           DateTime?
-  confirmationNumber String?
-  roomType           String?
-  numberOfGuests     Int?
-  totalPrice         String?
-  currency           String?
-  rawExtractedData   String?
-  status             BookingStatus @default(PENDING)
-  qrCode             String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-
-  @@index([userId])
-  @@index([confirmationNumber])
-}
-
-model IdentityDocument {
-  id                 String   @id @default(uuid())
 
   userId             String
   user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  documentType       DocumentType
-
-  documentNumber     String?
-  fullName           String?
-  nationality        String?
-
-  dateOfBirth        DateTime?
-  expiryDate         DateTime?
-
   imagePath          String
+
+  hotelName          String?
+  guestName          String?
+
+  checkIn            DateTime?
+  checkOut           DateTime?
+
+  checkedInAt        DateTime?
+  checkedOutAt       DateTime?
+
+  confirmationNumber String?
+
+  roomType           String?
+  numberOfGuests     Int?
+
+  totalPrice         String?
+  currency           String?
+
+  identityType       DocumentType?
+  identityName       String?
+  identityNumber     String?
+
   rawExtractedData   String?
 
-  verificationStatus VerificationStatus @default(PENDING)
+  status             BookingStatus @default(PENDING)
+
+  qrCode             String?
+
+  hotelCheckedInBy   String?
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+  @@index([confirmationNumber])
+  @@index([status])
+}
+
+model IdentityDocument {
+  id                 String             @id @default(uuid())
+  userId             String
+  documentType       DocumentType
+  documentNumber     String?
+  fullName           String?
+  nationality        String?
+  dateOfBirth        DateTime?
+  expiryDate         DateTime?
+  imagePath          String
+  verificationStatus VerificationStatus @default(PENDING)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  rawExtractedData   String?
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -75,12 +88,14 @@ enum BookingStatus {
   CHECKED_IN
   CANCELLED
 }
+
 enum DocumentType {
   PASSPORT
   AADHAAR
   DRIVING_LICENSE
   VISA
 }
+
 enum VerificationStatus {
   PENDING
   VERIFIED
