@@ -2,8 +2,10 @@
 
 import { useRef, useState } from "react";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
+import { api } from "@/lib/api";
+
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
 
 type IdentityDocument = {
   id: string;
@@ -30,7 +32,7 @@ export default function IdentityCard({
   const [loading, setLoading] = useState(false);
 
   async function upload(
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) {
     const file = e.target.files?.[0];
 
@@ -39,27 +41,15 @@ export default function IdentityCard({
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
       const formData = new FormData();
 
       formData.append("file", file);
       formData.append("documentType", type);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/identity/upload`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      if (!res.ok) {
-        throw await res.json();
-      }
+      await api("/identity/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       alert("Document uploaded!");
 
@@ -108,8 +98,8 @@ export default function IdentityCard({
           </Button>
 
           <input
-            hidden
             ref={inputRef}
+            hidden
             type="file"
             accept="image/*"
             onChange={upload}

@@ -51,6 +51,7 @@ export class BookingService {
     userId: string,
     file: Express.Multer.File,
   ) {
+    this.logger.error("BOOKING SERVICE VERSION 2");
     if (!file) {
       throw new BadRequestException(
         "No file uploaded",
@@ -155,16 +156,54 @@ export class BookingService {
         },
       });
 
-    const payload =
-      this.qrService.buildBookingPayload({
-        type: "pravaas_booking",
+    const identity =
+      await this.prisma.identityDocument.findFirst({
+        where: {
+        userId,
+      },
+      orderBy: {
+        updatedAt: "desc",
+    },
+  });
+  this.logger.log("========== IDENTITY ==========");
+  this.logger.log(identity);
+  this.logger.log("==============================");
 
-        bookingId: booking.id,
+  this.logger.log({
+    identityType: identity?.documentType,
+    identityName: identity?.fullName,
+    identityNumber: identity?.documentNumber,
+  });
+const payload =
+  this.qrService.buildBookingPayload({
+    version: 1,
 
-        confirmationNumber:
-          booking.confirmationNumber,
-      });
+    type: "pravaas_checkin",
 
+    bookingId: booking.id,
+
+    hotelName: booking.hotelName,
+
+    guestName: booking.guestName,
+
+    confirmationNumber:
+      booking.confirmationNumber,
+
+    checkIn: booking.checkIn,
+
+    checkOut: booking.checkOut,
+
+    identityType:
+      identity?.documentType ?? null,
+
+    identityName:
+      identity?.fullName ?? null,
+
+    identityNumber:
+      identity?.documentNumber ?? null,
+  });
+  this.logger.error(payload);
+  
     const qrCodeDataUrl =
       await this.qrService.generateQrCode(
         payload,

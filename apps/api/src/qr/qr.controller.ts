@@ -37,7 +37,6 @@ export class QrController {
     const documents = await this.prisma.identityDocument.findMany({
       where: {
         userId: req.user.id,
-        verificationStatus: "VERIFIED",
       },
       orderBy: {
         createdAt: "desc",

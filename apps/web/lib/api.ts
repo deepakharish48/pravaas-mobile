@@ -35,9 +35,28 @@ export async function api(
     },
   );
 
+  const contentType =
+    response.headers.get("content-type") ?? "";
+
   if (!response.ok) {
-    throw await response.json();
+    if (
+      contentType.includes(
+        "application/json",
+      )
+    ) {
+      throw await response.json();
+    }
+
+    throw new Error(await response.text());
   }
 
-  return response.json();
+  if (
+    contentType.includes(
+      "application/json",
+    )
+  ) {
+    return response.json();
+  }
+
+  return response.text();
 }

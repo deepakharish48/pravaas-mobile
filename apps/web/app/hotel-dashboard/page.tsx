@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
 
 type RecentGuest = {
   id: string;
@@ -146,7 +146,7 @@ export default function HotelDashboardPage() {
 
                   <Link
                     key={guest.id}
-                    href={`/hotel-checkin/${guest.id}`}
+                    href={`/hotel-booking/${guest.id}`}
                   >
 
                     <div className="rounded-xl border border-gray-200 p-4 hover:bg-gray-50 transition cursor-pointer">

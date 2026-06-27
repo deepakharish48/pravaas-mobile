@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as QRCode from "qrcode";
 
-type BookingPayload = {
+export type BookingPayload = {
   version: number;
 
   type: "pravaas_checkin";

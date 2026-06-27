@@ -4,7 +4,6 @@ import {
   } from "@nestjs/common";
   
   import { PrismaService } from "../prisma/prisma.service";
-  
   import { formatBooking } from "../booking/booking.mapper";
   
   @Injectable()
@@ -15,14 +14,13 @@ import {
   
     async dashboard() {
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
   
       const arrivals =
         await this.prisma.booking.count({
           where: {
             checkIn: {
-              gte: new Date(
-                today.setHours(0, 0, 0, 0),
-              ),
+              gte: today,
             },
           },
         });
@@ -48,7 +46,7 @@ import {
           },
           take: 5,
           orderBy: {
-            checkedInAt: "desc",
+            updatedAt: "desc",
           },
         });
   
@@ -65,14 +63,13 @@ import {
           id: guest.id,
           guestName: guest.guestName,
           room: guest.roomType ?? "--",
-          checkedInAt:
-            guest.checkedInAt?.toLocaleTimeString(
-              "en-US",
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-              },
-            ) ?? "--",
+          checkedInAt: guest.updatedAt.toLocaleTimeString(
+            "en-US",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          ),
         })),
       };
     }
@@ -125,13 +122,12 @@ import {
         },
         data: {
           status: "CHECKED_IN",
-          checkedInAt: new Date(),
         },
       });
   
       return {
         success: true,
-        message: "Guest checked in successfully.",
+        message: "Guest marked as checked in.",
       };
     }
   }

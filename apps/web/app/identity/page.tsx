@@ -6,7 +6,7 @@ import Image from "next/image";
 import { api } from "@/lib/api";
 import IdentityCard from "@/components/IdentityCard";
 
-import Container from "@/components/ui/Container";
+import Container from "@/components/UI/Container";
 
 type IdentityDocument = {
   id: string;

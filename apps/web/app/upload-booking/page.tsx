@@ -4,9 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
+import { api } from "@/lib/api";
+
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
 
 export default function UploadBookingPage() {
   const router = useRouter();
@@ -23,43 +25,21 @@ export default function UploadBookingPage() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login again.");
-        return;
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/bookings/upload`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ?? "Booking upload failed."
-        );
-      }
-
-      router.push("/qr");
-    } catch (err) {
+      const booking = await api("/bookings/upload", {
+        method: "POST",
+        body: formData,
+      });
+      
+      router.push(`/qr/${booking.id}`);
+    } catch (err: any) {
       console.error(err);
 
       alert(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong."
+        err?.message ??
+          "Booking upload failed.",
       );
     } finally {
       setLoading(false);

@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
-import Input from "@/components/ui/Input";
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
+import Input from "@/components/UI/Input";
 
 export default function LoginPage() {
   const router = useRouter();
