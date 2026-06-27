@@ -14,8 +14,8 @@ import { QrService } from "./qr.service";
 @UseGuards(AuthGuard("jwt"))
 export class QrController {
   constructor(
-    private qrService: QrService,
-    private prisma: PrismaService,
+    private readonly prisma: PrismaService,
+    private readonly qrService: QrService,
   ) {}
 
   @Get(":bookingId")
@@ -24,80 +24,64 @@ export class QrController {
     @Param("bookingId") bookingId: string,
   ) {
     const booking = await this.prisma.booking.findFirst({
-      where: { id: bookingId, userId: req.user.id },
+      where: {
+        id: bookingId,
+        userId: req.user.id,
+      },
     });
 
     if (!booking) {
       throw new NotFoundException("Booking not found");
     }
 
-    const documents =
-  await this.prisma.identityDocument.findMany({
-    where: {
-      userId: req.user.id,
-    },
-  });
+    const documents = await this.prisma.identityDocument.findMany({
+      where: {
+        userId: req.user.id,
+        verificationStatus: "VERIFIED",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-const identity =
-  documents.find(
-    (d) => d.documentType === "AADHAAR",
-  ) ??
-  documents.find(
-    (d) => d.documentType === "PASSPORT",
-  ) ??
-  documents.find(
-    (d) =>
-      d.documentType ===
-      "DRIVING_LICENSE",
-  ) ??
-  null;
+    const identity =
+      documents.find(
+        (d) => d.documentType === "AADHAAR",
+      ) ??
+      documents.find(
+        (d) => d.documentType === "PASSPORT",
+      ) ??
+      documents.find(
+        (d) => d.documentType === "DRIVING_LICENSE",
+      ) ??
+      null;
 
-const payload =
-  this.qrService.buildBookingPayload({
-    type: "pravaas_checkin",
+    const payload = this.qrService.buildBookingPayload({
+      version: 1,
 
-    bookingId: booking.id,
+      type: "pravaas_checkin",
 
-    hotelName:
-      booking.hotelName,
+      bookingId: booking.id,
 
-    guestName:
-      booking.guestName,
+      hotelName: booking.hotelName,
 
-    confirmationNumber:
-      booking.confirmationNumber,
+      guestName: booking.guestName,
 
-    checkIn:
-      booking.checkIn,
+      confirmationNumber: booking.confirmationNumber,
 
-    checkOut:
-      booking.checkOut,
+      checkIn: booking.checkIn,
 
-    identityType:
-      identity?.documentType ??
-      null,
+      checkOut: booking.checkOut,
 
-    identityName:
-      identity?.fullName ??
-      null,
+      identityType: identity?.documentType ?? null,
 
-    identityNumber:
-      identity?.documentNumber ??
-      null,
-  });
+      identityName: identity?.fullName ?? null,
+
+      identityNumber: identity?.documentNumber ?? null,
+    });
 
     const qrCodeDataUrl =
       await this.qrService.generateQrCode(payload);
-
-    /*const qrCodeDataUrl =
-      booking.qrCode ?? (await this.qrService.generateQrCode(payload));
-
-    if (!booking.qrCode) {
-      await this.prisma.booking.update({
-        where: { id: bookingId },
-        data: { qrCode: qrCodeDataUrl },
-      });
-    }*/
 
     return {
       bookingId: booking.id,

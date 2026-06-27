@@ -7,6 +7,7 @@ import { OpenaiModule } from "./openai/openai.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QrModule } from "./qr/qr.module";
 import { IdentityModule } from "./identity/identity.module";
+import { HotelModule } from "./hotel/hotel.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { IdentityModule } from "./identity/identity.module";
     BookingModule,
     QrModule,
     IdentityModule,
+    HotelModule,
   ],
 })
 export class AppModule {}
