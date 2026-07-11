@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
-import Input from "@/components/ui/Input";
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
+import Input from "@/components/UI/Input";
 
 export default function HotelSignupPage() {
   const router = useRouter();
