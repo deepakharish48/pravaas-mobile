@@ -6,8 +6,8 @@ import Link from "next/link";
 
 import { api } from "@/lib/api";
 
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
 
 type Booking = {
   id: string;

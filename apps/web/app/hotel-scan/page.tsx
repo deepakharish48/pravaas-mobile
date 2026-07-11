@@ -6,9 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BrowserQRCodeReader } from "@zxing/browser";
 
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
+import Button from "@/components/UI/Button";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
 
 export default function HotelScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
