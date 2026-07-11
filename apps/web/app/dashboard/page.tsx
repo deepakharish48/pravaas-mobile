@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Card from "@/components/ui/Card";
-import Container from "@/components/ui/Container";
+import Card from "@/components/UI/Card";
+import Container from "@/components/UI/Container";
 
 export default function DashboardPage() {
   return (
