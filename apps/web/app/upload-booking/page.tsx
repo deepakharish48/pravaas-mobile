@@ -32,14 +32,14 @@ export default function UploadBookingPage() {
         method: "POST",
         body: formData,
       });
-      
+
       router.push(`/qr/${booking.id}`);
     } catch (err: any) {
       console.error(err);
 
       alert(
         err?.message ??
-          "Booking upload failed.",
+          "Booking upload failed."
       );
     } finally {
       setLoading(false);
@@ -70,27 +70,30 @@ export default function UploadBookingPage() {
 
         <Card>
           <div className="space-y-6">
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) =>
-                setFile(
-                  e.target.files?.[0] ?? null
-                )
-              }
-            />
+            <div>
+              <input
+                id="booking-file"
+                type="file"
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={(e) =>
+                  setFile(
+                    e.target.files?.[0] ?? null
+                  )
+                }
+              />
 
-            {file && (
-              <div className="rounded-lg bg-gray-100 p-3">
-                <p className="text-sm text-gray-500">
-                  Selected File
-                </p>
+              <label
+                htmlFor="booking-file"
+                className="flex w-full cursor-pointer items-center justify-center rounded-lg border border-blue-600 bg-white px-4 py-3 font-semibold text-blue-600 transition hover:bg-blue-50"
+              >
+                Choose File
+              </label>
 
-                <p className="mt-1 font-medium">
-                  {file.name}
-                </p>
-              </div>
-            )}
+              <p className="mt-2 text-center text-sm text-gray-500">
+                {file ? file.name : "No file chosen"}
+              </p>
+            </div>
 
             <Button
               onClick={uploadBooking}

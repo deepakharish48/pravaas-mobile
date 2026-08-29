@@ -1,0 +1,35 @@
+# Pravaas web app — Next.js on Netlify (pnpm monorepo)
+# Docs: Netlify plugin → netlify-frameworks/references/nextjs.md
+
+[build]
+  command = "pnpm --filter web build"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9.15.0"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Set NEXT_PUBLIC_API_URL in the Netlify UI (Site settings → Environment variables).
+# Production: your deployed NestJS API URL (e.g. Railway, Render, Fly.io).
+# Deploy previews: staging API URL or leave unset to use the build-time default.
+[context.production]
+  # NEXT_PUBLIC_API_URL = "https://your-api.example.com"
+
+[context.deploy-preview]
+  # NEXT_PUBLIC_API_URL = "https://staging-api.example.com"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=()"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

@@ -1,6 +1,5 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://192.168.29.45:3001";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 export async function api(
   path: string,
