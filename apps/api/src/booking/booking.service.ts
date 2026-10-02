@@ -266,6 +266,37 @@ const payload =
   /**
    * Booking Details
    */
+  async generateItinerary(
+    userId: string,
+    id: string,
+    preferences: { destination?: string; interests?: string[] },
+  ) {
+    const booking = await this.prisma.booking.findFirst({
+      where: { id, userId },
+    });
+    if (!booking) {
+      throw new NotFoundException("Booking not found");
+    }
+    if (!booking.checkIn || !booking.checkOut) {
+      throw new BadRequestException(
+        "Booking check-in and check-out dates are required to plan an itinerary.",
+      );
+    }
+    const destination = preferences.destination?.trim();
+    if (!destination || destination.length > 120) {
+      throw new BadRequestException("Please provide a valid destination (up to 120 characters).");
+    }
+    const interests = (preferences.interests ?? []).slice(0, 8);
+    return this.openaiService.generateItinerary({
+      destination,
+      hotelName: booking.hotelName,
+      checkIn: booking.checkIn.toISOString().slice(0, 10),
+      checkOut: booking.checkOut.toISOString().slice(0, 10),
+      guests: booking.numberOfGuests,
+      interests,
+    });
+  }
+
   async findOne(
     userId: string,
     id: string,
