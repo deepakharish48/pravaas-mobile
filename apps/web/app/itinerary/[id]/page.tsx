@@ -102,7 +102,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     const next = [...chat, { role: "user" as const, content: clean }];
     setChat(next); setMessage(""); setChatBusy(true); setChatError("");
     try {
-      const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(-10) }) });
+      const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(0, -1).slice(-10) }) });
       setChat((current) => [...current, { role: "assistant", content: result.reply }]);
       speak(result.reply);
     } catch (err: any) { setChatError(err?.message ?? "Shika is having trouble responding. Please try again."); }
@@ -145,7 +145,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   async function searchPlaces() {
     setPlacesBusy(true); setPlacesError("");
     try {
-      const result = await api(`/bookings/${id}/recommendations`, { method: "POST", body: JSON.stringify({ query: placeQuery.trim() || "popular attractions" }) });
+      const result = await api(`/bookings/${id}/recommendations`, { method: "POST", body: JSON.stringify({ query: placeQuery.trim() || "popular attractions", destination: destination.trim() }) });
       setPlaces(result);
     } catch (err: any) { setPlacesError(err?.message ?? "Could not load live recommendations."); setPlaces([]); }
     finally { setPlacesBusy(false); }
