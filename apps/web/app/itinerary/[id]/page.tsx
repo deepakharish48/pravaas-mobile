@@ -70,7 +70,21 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     return `${formatDate(booking.checkIn)} – ${formatDate(booking.checkOut)}`;
   }, [booking]);
 
-  async function generateItinerary() {\n    setGenerating(true);\n    setGenerationError("");\n    try {\n      const result = await api(`/bookings/${id}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: selectedCategories }) });\n      setItinerary(result);\n      setTab("itinerary");\n    } catch (err: any) {\n      setGenerationError(err?.message ?? "We couldn’t generate your itinerary. Please try again.");\n    } finally {\n      setGenerating(false);\n    }\n  }\n\n  function toggleCategory(name: string) {
+  async function generateItinerary() {
+    setGenerating(true);
+    setGenerationError("");
+    try {
+      const result = await api(`/bookings/${id}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: selectedCategories }) });
+      setItinerary(result);
+      setTab("itinerary");
+    } catch (err: any) {
+      setGenerationError(err?.message ?? "We couldn’t generate your itinerary. Please try again.");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  function toggleCategory(name: string) {
     setSelectedCategories((current) =>
       current.includes(name) ? current.filter((item) => item !== name) : [...current, name],
     );
@@ -139,7 +153,13 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
           ))}
         </nav>
 
-        <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">\n          <label htmlFor="trip-destination" className="block text-sm font-semibold text-slate-900">Where are you travelling?</label>\n          <p className="mt-1 text-xs text-slate-500">Enter the city or destination for your stay. You can change it before generating.</p>\n          <input id="trip-destination" value={destination} onChange={(event) => setDestination(event.target.value)} placeholder="e.g., Hyderabad" maxLength={120} className="mt-3 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />\n        </section>\n\n        {tab === "discover" && (
+        <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <label htmlFor="trip-destination" className="block text-sm font-semibold text-slate-900">Where are you travelling?</label>
+          <p className="mt-1 text-xs text-slate-500">Enter the city or destination for your stay. You can change it before generating.</p>
+          <input id="trip-destination" value={destination} onChange={(event) => setDestination(event.target.value)} placeholder="e.g., Hyderabad" maxLength={120} className="mt-3 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+        </section>
+
+        {tab === "discover" && (
           <section className="mt-7">
             <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
               <div>
