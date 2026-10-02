@@ -286,8 +286,8 @@ const payload =
     if (!destination || destination.length > 120) {
       throw new BadRequestException("Please provide a valid destination (up to 120 characters).");
     }
-    const interests = (preferences.interests ?? []).slice(0, 8);
-    return this.openaiService.generateItinerary({
+    const interests = (preferences.interests ?? []).filter((item) => typeof item === "string").slice(0, 8);
+    const itinerary = await this.openaiService.generateItinerary({
       destination,
       hotelName: booking.hotelName,
       checkIn: booking.checkIn.toISOString().slice(0, 10),
@@ -295,6 +295,14 @@ const payload =
       guests: booking.numberOfGuests,
       interests,
     });
+    await this.prisma.booking.update({
+      where: { id: booking.id },
+      data: {
+        destination,
+        itineraryData: JSON.stringify(itinerary),
+      },
+    });
+    return itinerary;
   }
 
   async findOne(
