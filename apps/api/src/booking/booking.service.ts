@@ -27,7 +27,7 @@ export class BookingService {
     private prisma: PrismaService,
     private openaiService: OpenaiService,
     private qrService: QrService,
-    configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {
     this.uploadDir = path.resolve(
       configService.get<string>(
