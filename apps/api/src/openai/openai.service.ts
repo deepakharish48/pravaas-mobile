@@ -196,6 +196,64 @@ export class OpenaiService {
     }
   }
 
+  async generateItinerary(input: {
+    destination: string;
+    hotelName?: string | null;
+    checkIn: string;
+    checkOut: string;
+    guests?: number | null;
+    interests: string[];
+  }): Promise<{ destination: string; days: Array<{ date: string; title: string; activities: Array<{ time: string; name: string; description: string }> }> }> {
+    if (!this.client) {
+      throw new ServiceUnavailableException("AI itinerary generation is not configured. Set OPENAI_API_KEY.");
+    }
+
+    const prompt = `Create a practical travel itinerary as JSON for a guest staying in ${input.destination}.
+Hotel: ${input.hotelName || "not specified"}
+Check-in: ${input.checkIn}
+Check-out: ${input.checkOut}
+Guests: ${input.guests ?? "not specified"}
+Interests: ${input.interests.join(", ") || "general sightseeing and local experiences"}
+
+Return only a JSON object with this shape:
+{"destination":"...","days":[{"date":"YYYY-MM-DD","title":"Short day theme","activities":[{"time":"Morning","name":"Activity name","description":"One concise helpful sentence"}]}]}
+Include one entry for each calendar day from check-in through the day before check-out. Suggest 3-5 activities per day. Keep activities geographically sensible, varied, and suitable for the guest count. Do not invent opening hours, prices, reservations, or claim live availability. If uncertain, describe ideas generally.`;
+
+    try {
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: "You are a careful travel planner. Return valid JSON only." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.4,
+        max_tokens: 3000,
+      });
+      const content = response.choices[0]?.message?.content;
+      if (!content) throw new Error("Empty itinerary response");
+      const parsed = JSON.parse(content);
+      if (!Array.isArray(parsed.days)) throw new Error("Invalid itinerary response");
+      return {
+        destination: input.destination,
+        days: parsed.days.map((day: any) => ({
+          date: String(day.date ?? ""),
+          title: String(day.title ?? "Explore the destination"),
+          activities: Array.isArray(day.activities)
+            ? day.activities.slice(0, 8).map((activity: any) => ({
+                time: String(activity.time ?? ""),
+                name: String(activity.name ?? "Suggested activity"),
+                description: String(activity.description ?? ""),
+              }))
+            : [],
+        })),
+      };
+    } catch (error) {
+      this.logger.error("Itinerary generation failed", error);
+      throw new ServiceUnavailableException("We couldn't generate your itinerary right now. Please try again.");
+    }
+  }
+
   private getMimeType(filePath: string): string {
     const ext = filePath.split(".").pop()?.toLowerCase();
     const mimeTypes: Record<string, string> = {
