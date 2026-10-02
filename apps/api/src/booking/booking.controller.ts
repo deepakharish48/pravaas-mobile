@@ -46,14 +46,9 @@ export class BookingController {
     return this.bookingService.chatWithShika(req.user.id, id, body.message, body.history);
   }
 
-  @Get(":id/recommendations")
-  recommendations(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() _body: any) {
-    return this.bookingService.findRecommendations(req.user.id, id, "popular attractions");
-  }
-
   @Post(":id/recommendations")
-  searchRecommendations(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { query?: string }) {
-    return this.bookingService.findRecommendations(req.user.id, id, body.query ?? "popular attractions");
+  searchRecommendations(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { query?: string; destination?: string }) {
+    return this.bookingService.findRecommendations(req.user.id, id, body.query ?? "popular attractions", body.destination);
   }
 
   @Post("upload")
