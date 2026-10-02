@@ -23,6 +23,7 @@ export interface SignupRequest {
 
 export interface BookingDetails {
   hotelName?: string;
+  destination?: string;
   guestName?: string;
   checkIn?: string;
   checkOut?: string;
@@ -41,6 +42,8 @@ export interface Booking {
   userId: string;
   imagePath: string;
   hotelName: string | null;
+  destination: string | null;
+  itinerary: { destination: string; days: Array<{ date: string; title: string; activities: Array<{ time: string; name: string; description: string }> }> } | null;
   guestName: string | null;
   checkIn: string | null;
   checkOut: string | null;
