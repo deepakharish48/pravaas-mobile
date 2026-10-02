@@ -69,6 +69,7 @@ model IdentityDocument {
   id                 String             @id @default(uuid())
   userId             String
   documentType       DocumentType
+  displayName        String?
   documentNumber     String?
   fullName           String?
   nationality        String?
@@ -96,6 +97,7 @@ enum DocumentType {
   AADHAAR
   DRIVING_LICENSE
   VISA
+  OTHER
 }
 
 enum VerificationStatus {
