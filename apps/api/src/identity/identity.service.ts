@@ -50,7 +50,7 @@ export class IdentityService {
 
     // Extract identity details only for the established identity document types.
     // Visa and custom wallet uploads are stored as files without guessing their contents.
-    const extracted = ["AADHAAR", "PASSPORT", "DRIVING_LICENSE"].includes(documentType)
+    const extracted = file.mimetype.startsWith("image/") && ["AADHAAR", "PASSPORT", "DRIVING_LICENSE"].includes(documentType)
       ? await this.openaiService.extractIdentityDocument(filePath)
       : null;
 
