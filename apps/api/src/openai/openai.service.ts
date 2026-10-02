@@ -10,7 +10,7 @@ import * as path from "path";
 import type { BookingDetails, IdentityExtraction } from "@pravaas/types";
 
 const EXTRACTION_PROMPT = `You extract hotel booking details from screenshots. Return JSON with these fields:
-hotelName, guestName, checkIn (ISO date YYYY-MM-DD), checkOut (ISO date YYYY-MM-DD),
+hotelName, destination (city or locality of the hotel, if explicitly shown), guestName, checkIn (ISO date YYYY-MM-DD), checkOut (ISO date YYYY-MM-DD),
 confirmationNumber, roomType, numberOfGuests (number), totalPrice (string), currency, rawText.
 Use null for missing fields. Dates must be valid ISO 8601 date strings.`;
 
