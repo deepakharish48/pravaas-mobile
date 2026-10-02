@@ -43,12 +43,16 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("discover");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [destination, setDestination] = useState("");
+  const [itinerary, setItinerary] = useState<{ destination: string; days: Array<{ date: string; title: string; activities: Array<{ time: string; name: string; description: string }> }> } | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState("");
 
   useEffect(() => {
     let active = true;
     api(`/bookings/${id}`)
       .then((data) => {
-        if (active) setBooking(data);
+        if (active) { setBooking(data); setDestination(data.destination ?? ""); }
       })
       .catch((err) => {
         if (active) setError(err?.message ?? "We couldn't load this booking.");
@@ -66,7 +70,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     return `${formatDate(booking.checkIn)} – ${formatDate(booking.checkOut)}`;
   }, [booking]);
 
-  function toggleCategory(name: string) {
+  async function generateItinerary() {\n    setGenerating(true);\n    setGenerationError("");\n    try {\n      const result = await api(`/bookings/${id}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: selectedCategories }) });\n      setItinerary(result);\n      setTab("itinerary");\n    } catch (err: any) {\n      setGenerationError(err?.message ?? "We couldn’t generate your itinerary. Please try again.");\n    } finally {\n      setGenerating(false);\n    }\n  }\n\n  function toggleCategory(name: string) {
     setSelectedCategories((current) =>
       current.includes(name) ? current.filter((item) => item !== name) : [...current, name],
     );
@@ -135,7 +139,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
           ))}
         </nav>
 
-        {tab === "discover" && (
+        <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">\n          <label htmlFor="trip-destination" className="block text-sm font-semibold text-slate-900">Where are you travelling?</label>\n          <p className="mt-1 text-xs text-slate-500">Enter the city or destination for your stay. You can change it before generating.</p>\n          <input id="trip-destination" value={destination} onChange={(event) => setDestination(event.target.value)} placeholder="e.g., Hyderabad" maxLength={120} className="mt-3 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />\n        </section>\n\n        {tab === "discover" && (
           <section className="mt-7">
             <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
               <div>
@@ -164,7 +168,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
                   <p className="font-semibold text-slate-900">Ready to plan?</p>
                   <p className="mt-1 text-sm text-slate-500">{selectedCategories.length ? `${selectedCategories.length} interests selected` : "You can start with any interests—or explore later."}</p>
                 </div>
-                <Button onClick={() => setTab("assistant")}>Continue to AI assistant</Button>
+                <Button disabled={!destination.trim() || generating} onClick={generateItinerary}>{generating ? "Creating your plan…" : "Generate my itinerary"}</Button>
               </div>
             </div>
             <p className="mt-5 text-xs leading-5 text-slate-400">Partner and sponsored recommendations will appear here in a later release and will be clearly labelled.</p>
@@ -172,11 +176,17 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
         )}
 
         {tab === "itinerary" && (
-          <section className="mt-7 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-            <div className="text-3xl" aria-hidden="true">🗓️</div>
-            <h2 className="mt-3 text-xl font-bold text-slate-900">Your itinerary will live here</h2>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Once itinerary generation is connected, you’ll be able to review each day, move activities around, and keep your plan with this booking.</p>
-            <Button className="mt-5" onClick={() => setTab("assistant")}>Start with the assistant</Button>
+          <section className="mt-7">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div><h2 className="text-xl font-bold text-slate-900">Your trip itinerary</h2><p className="mt-1 text-sm text-slate-500">{itinerary ? `A suggested plan for ${itinerary.destination}` : "Generate a plan based on your stay and interests."}</p></div>
+              <Button disabled={!destination.trim() || generating} onClick={generateItinerary}>{generating ? "Generating…" : itinerary ? "Regenerate plan" : "Generate itinerary"}</Button>
+            </div>
+            {generationError && <p role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{generationError}</p>}
+            {!itinerary ? <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">Choose your destination and interests, then generate your day-by-day plan.</div> :
+              <div className="mt-5 space-y-5">{itinerary.days.map((day, index) => <article key={day.date || index} className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+                <div className="flex flex-wrap items-baseline gap-2"><span className="text-xs font-bold uppercase tracking-wide text-blue-700">Day {index + 1}</span><h3 className="text-lg font-bold text-slate-900">{day.title}</h3><span className="text-xs text-slate-500">{formatDate(day.date)}</span></div>
+                <div className="mt-4 space-y-3">{day.activities.map((activity, activityIndex) => <div key={activityIndex} className="flex gap-3 rounded-xl bg-slate-50 p-3"><span className="mt-0.5 min-w-16 text-xs font-semibold text-blue-700">{activity.time || "Anytime"}</span><div><p className="text-sm font-semibold text-slate-900">{activity.name}</p><p className="mt-1 text-sm leading-5 text-slate-600">{activity.description}</p></div></div>)}</div>
+              </article>)}</div>}
           </section>
         )}
 
@@ -187,7 +197,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-xl text-blue-700">✦</div>
                 <div>
                   <h2 className="font-bold text-slate-900">Your AI travel assistant</h2>
-                  <p className="text-xs text-slate-500">Chat and voice planning are coming next</p>
+                  <p className="text-xs text-slate-500">Itinerary generation is now available</p>
                 </div>
               </div>
             </div>
@@ -202,7 +212,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
                 ))}
               </div>
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800">
-                This is the first UI milestone. It currently displays your booking and captures interest selections; AI generation, saved plans, and voice input will be connected in the next milestone.
+                Tell the assistant what you enjoy by selecting interests in Discover. Your itinerary is generated on request; plans are not yet saved between sessions.
               </div>
             </div>
             <div className="flex gap-2 border-t border-slate-100 p-4">
