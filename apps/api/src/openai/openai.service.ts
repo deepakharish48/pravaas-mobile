@@ -254,6 +254,25 @@ Include one entry for each calendar day from check-in through the day before che
     }
   }
 
+  async chatWithShika(input: {
+    message: string;
+    history: Array<{ role: string; content: string }>;
+    context: { destination?: string | null; hotelName?: string | null; checkIn?: string; checkOut?: string; guests?: number | null; itinerary?: any };
+  }): Promise<{ reply: string }> {
+    if (!this.client) throw new ServiceUnavailableException("Shika is not configured. Set OPENAI_API_KEY.");
+    const response = await this.client.chat.completions.create({
+      model: "gpt-4o",
+      temperature: 0.7,
+      max_tokens: 700,
+      messages: [
+        { role: "system", content: `You are Shika, a friendly, warm female-voiced AI travel companion for Pravaas. Be welcoming, concise, and practical. Personalize answers using this booking context: ${JSON.stringify(input.context)}. Never claim live opening hours, prices, availability, or bookings unless explicitly provided by a live places result. If asked to change the itinerary, explain that the guest can edit and save it in My itinerary. Do not reveal private booking details beyond this booking context.` },
+        ...input.history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+        { role: "user", content: input.message },
+      ],
+    });
+    return { reply: response.choices[0]?.message?.content?.trim() || "I'm sorry, I couldn't think of a response. Could you try again?" };
+  }
+
   private getMimeType(filePath: string): string {
     const ext = filePath.split(".").pop()?.toLowerCase();
     const mimeTypes: Record<string, string> = {
