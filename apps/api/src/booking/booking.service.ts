@@ -115,6 +115,9 @@ export class BookingService {
           hotelName:
             extractedDetails?.hotelName ?? null,
 
+          destination:
+            extractedDetails?.destination ?? null,
+
           guestName:
             extractedDetails?.guestName ?? null,
 
