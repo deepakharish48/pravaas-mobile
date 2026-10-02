@@ -6,6 +6,8 @@ export function formatBooking(booking: Booking) {
     userId: booking.userId,
     imagePath: booking.imagePath,
     hotelName: booking.hotelName,
+    destination: booking.destination,
+    itinerary: booking.itineraryData ? JSON.parse(booking.itineraryData) : null,
     guestName: booking.guestName,
     checkIn: booking.checkIn?.toISOString() ?? null,
     checkOut: booking.checkOut?.toISOString() ?? null,
