@@ -308,6 +308,78 @@ const payload =
     return itinerary;
   }
 
+  async updateItinerary(userId: string, id: string, itinerary: any) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (!itinerary || typeof itinerary.destination !== "string" || !Array.isArray(itinerary.days)) {
+      throw new BadRequestException("Please provide a valid itinerary.");
+    }
+    const clean = {
+      destination: itinerary.destination.slice(0, 120),
+      days: itinerary.days.slice(0, 30).map((day: any) => ({
+        date: String(day.date ?? "").slice(0, 20),
+        title: String(day.title ?? "").slice(0, 160),
+        activities: Array.isArray(day.activities) ? day.activities.slice(0, 12).map((a: any) => ({
+          time: String(a.time ?? "").slice(0, 80),
+          name: String(a.name ?? "").slice(0, 160),
+          description: String(a.description ?? "").slice(0, 600),
+        })) : [],
+      })),
+    };
+    await this.prisma.booking.update({
+      where: { id },
+      data: { destination: clean.destination, itineraryData: JSON.stringify(clean) },
+    });
+    return clean;
+  }
+
+  async chatWithShika(userId: string, id: string, message: string, history: Array<{role: string; content: string}> = []) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (!message?.trim() || message.length > 2000) throw new BadRequestException("Message must be between 1 and 2000 characters.");
+    let itinerary: any = null;
+    try { itinerary = booking.itineraryData ? JSON.parse(booking.itineraryData) : null; } catch {}
+    return this.openaiService.chatWithShika({
+      message: message.trim(),
+      history: history.filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string").slice(-10),
+      context: {
+        destination: booking.destination,
+        hotelName: booking.hotelName,
+        checkIn: booking.checkIn?.toISOString().slice(0, 10),
+        checkOut: booking.checkOut?.toISOString().slice(0, 10),
+        guests: booking.numberOfGuests,
+        itinerary,
+      },
+    });
+  }
+
+  async findRecommendations(userId: string, id: string, query: string) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
+    if (!booking) throw new NotFoundException("Booking not found");
+    const destination = booking.destination?.trim();
+    if (!destination) throw new BadRequestException("Set a destination before searching for places.");
+    const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
+    if (!apiKey) throw new BadRequestException("Live recommendations are not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
+    const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey, "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.rating,places.googleMapsUri,places.primaryTypeDisplayName" },
+      body: JSON.stringify({ textQuery: `${query || "popular attractions"} in ${destination}`, maxResultCount: 8 }),
+    });
+    if (!response.ok) {
+      this.logger.warn(`Google Places request failed: ${response.status}`);
+      throw new BadRequestException("Live places could not be loaded right now.");
+    }
+    const data: any = await response.json();
+    return (data.places ?? []).map((place: any) => ({
+      id: place.id,
+      name: place.displayName?.text ?? "Place",
+      address: place.formattedAddress ?? "",
+      rating: place.rating ?? null,
+      category: place.primaryTypeDisplayName?.text ?? "",
+      url: place.googleMapsUri ?? null,
+    }));
+  }
+
   async findOne(
     userId: string,
     id: string,
