@@ -353,10 +353,10 @@ const payload =
     });
   }
 
-  async findRecommendations(userId: string, id: string, query: string) {
+  async findRecommendations(userId: string, id: string, query: string, destinationOverride?: string) {
     const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
     if (!booking) throw new NotFoundException("Booking not found");
-    const destination = booking.destination?.trim();
+    const destination = destinationOverride?.trim() || booking.destination?.trim();
     if (!destination) throw new BadRequestException("Set a destination before searching for places.");
     const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
     if (!apiKey) throw new BadRequestException("Live recommendations are not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
