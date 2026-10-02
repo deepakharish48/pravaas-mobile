@@ -15,6 +15,8 @@ type Booking = {
   checkOut?: string | null;
   numberOfGuests?: number | null;
   status?: string | null;
+  destination?: string | null;
+  itinerary?: { destination: string; days: Array<{ date: string; title: string; activities: Array<{ time: string; name: string; description: string }> }> } | null;
 };
 
 type Tab = "discover" | "itinerary" | "assistant";
@@ -52,7 +54,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     let active = true;
     api(`/bookings/${id}`)
       .then((data) => {
-        if (active) { setBooking(data); setDestination(data.destination ?? ""); }
+        if (active) { setBooking(data); setDestination(data.destination ?? ""); setItinerary(data.itinerary ?? null); }
       })
       .catch((err) => {
         if (active) setError(err?.message ?? "We couldn't load this booking.");
