@@ -27,6 +27,8 @@ model Booking {
   imagePath          String
 
   hotelName          String?
+  destination        String?
+  itineraryData      String?
   guestName          String?
 
   checkIn            DateTime?
