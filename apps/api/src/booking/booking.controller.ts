@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Body,
   Param,
   Post,
   Request,
@@ -20,6 +21,19 @@ export class BookingController {
   constructor(
     private readonly bookingService: BookingService,
   ) {}
+
+  @Post(":id/itinerary")
+  generateItinerary(
+    @Request() req: { user: { id: string } },
+    @Param("id") id: string,
+    @Body() body: { destination?: string; interests?: string[] },
+  ) {
+    return this.bookingService.generateItinerary(
+      req.user.id,
+      id,
+      body,
+    );
+  }
 
   @Post("upload")
   @UseInterceptors(

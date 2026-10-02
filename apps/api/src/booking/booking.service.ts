@@ -115,6 +115,9 @@ export class BookingService {
           hotelName:
             extractedDetails?.hotelName ?? null,
 
+          destination:
+            extractedDetails?.destination ?? null,
+
           guestName:
             extractedDetails?.guestName ?? null,
 
@@ -266,6 +269,45 @@ const payload =
   /**
    * Booking Details
    */
+  async generateItinerary(
+    userId: string,
+    id: string,
+    preferences: { destination?: string; interests?: string[] },
+  ) {
+    const booking = await this.prisma.booking.findFirst({
+      where: { id, userId },
+    });
+    if (!booking) {
+      throw new NotFoundException("Booking not found");
+    }
+    if (!booking.checkIn || !booking.checkOut) {
+      throw new BadRequestException(
+        "Booking check-in and check-out dates are required to plan an itinerary.",
+      );
+    }
+    const destination = preferences.destination?.trim();
+    if (!destination || destination.length > 120) {
+      throw new BadRequestException("Please provide a valid destination (up to 120 characters).");
+    }
+    const interests = (preferences.interests ?? []).filter((item) => typeof item === "string").slice(0, 8);
+    const itinerary = await this.openaiService.generateItinerary({
+      destination,
+      hotelName: booking.hotelName,
+      checkIn: booking.checkIn.toISOString().slice(0, 10),
+      checkOut: booking.checkOut.toISOString().slice(0, 10),
+      guests: booking.numberOfGuests,
+      interests,
+    });
+    await this.prisma.booking.update({
+      where: { id: booking.id },
+      data: {
+        destination,
+        itineraryData: JSON.stringify(itinerary),
+      },
+    });
+    return itinerary;
+  }
+
   async findOne(
     userId: string,
     id: string,
