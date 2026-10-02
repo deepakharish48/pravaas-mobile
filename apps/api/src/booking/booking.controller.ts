@@ -35,6 +35,22 @@ export class BookingController {
     );
   }
 
+
+  @Post(":id/itinerary/save")
+  saveItinerary(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { itinerary: any }) {
+    return this.bookingService.updateItinerary(req.user.id, id, body.itinerary);
+  }
+
+  @Post(":id/assistant")
+  assistant(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { message: string; history?: Array<{ role: string; content: string }> }) {
+    return this.bookingService.chatWithShika(req.user.id, id, body.message, body.history);
+  }
+
+  @Post(":id/recommendations")
+  searchRecommendations(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { query?: string; destination?: string }) {
+    return this.bookingService.findRecommendations(req.user.id, id, body.query ?? "popular attractions", body.destination);
+  }
+
   @Post("upload")
   @UseInterceptors(
     FileInterceptor("file", {
