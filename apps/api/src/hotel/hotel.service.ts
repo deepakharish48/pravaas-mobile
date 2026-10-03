@@ -5,6 +5,29 @@ import {
   
   import { PrismaService } from "../prisma/prisma.service";
   import { formatBooking } from "../booking/booking.mapper";
+
+type CFormData = {
+  hotelName: string;
+  hotelAddress: string;
+  hotelPhone: string;
+  guestName: string;
+  nationality: string;
+  passportNumber: string;
+  visaNumber: string;
+  visaType: string;
+  indiaContactPhone: string;
+  email: string;
+  remarks: string;
+  arrivedFrom: string;
+  arrivalDate: string;
+  arrivalTime: string;
+  purposeOfVisit: string;
+  previousPlaceOfStay: string;
+  departureDate: string;
+  departureTime: string;
+  nextDestination: string;
+};
+
   
   @Injectable()
   export class HotelService {
