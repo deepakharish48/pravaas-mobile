@@ -158,6 +158,10 @@ export default function PravaasMap({ destination, places = [], route = null, cur
         placeMarkersRef.current = [];
         routeMarkersRef.current.forEach((marker) => marker.setMap(null));
         routeMarkersRef.current = [];
+        if (currentMarkerRef.current) {
+          currentMarkerRef.current.setMap(null);
+          currentMarkerRef.current = null;
+        }
         if (routePolylineRef.current) {
           routePolylineRef.current.setMap(null);
           routePolylineRef.current = null;
