@@ -490,6 +490,94 @@ const payload =
     };
   }
 
+
+  async getTravellerInfo(userId: string) {
+    const now = new Date();
+
+    const [passport, upcoming, latest] = await Promise.all([
+      this.prisma.identityDocument.findFirst({
+        where: { userId, documentType: "PASSPORT" },
+        orderBy: { updatedAt: "desc" },
+      }),
+      this.prisma.booking.findFirst({
+        where: { userId, checkOut: { gte: now } },
+        orderBy: { checkIn: "asc" },
+      }),
+      this.prisma.booking.findFirst({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const booking = upcoming ?? latest;
+    const nationality = passport?.nationality?.trim() || null;
+    const destination = booking?.destination?.trim() || null;
+
+    const isIndian = nationality
+      ? /^(india|indian|in|ind)$/i.test(nationality)
+      : false;
+
+    const result: {
+      nationality: string | null;
+      destination: string | null;
+      isForeignTraveller: boolean;
+      embassyContacts: Array<{
+        id: string;
+        name: string;
+        address: string;
+        phone: string | null;
+        website: string | null;
+        mapsUrl: string | null;
+        location: { lat: number; lng: number } | null;
+      }>;
+      googleMapsAttribution: boolean;
+    } = {
+      nationality,
+      destination,
+      isForeignTraveller: Boolean(nationality && !isIndian),
+      embassyContacts: [],
+      googleMapsAttribution: false,
+    };
+
+    if (!result.isForeignTraveller || !destination) return result;
+
+    const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
+    if (!apiKey) return result;
+
+    const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.internationalPhoneNumber,places.websiteUri,places.googleMapsUri,places.location",
+      },
+      body: JSON.stringify({
+        textQuery: `${nationality} embassy consulate in ${destination}`,
+        pageSize: 5,
+      }),
+    });
+
+    if (!response.ok) {
+      this.logger.warn("Embassy/consulate Places request failed: " + response.status);
+      return result;
+    }
+
+    const data: any = await response.json();
+    result.embassyContacts = (data.places ?? []).slice(0, 5).map((place: any) => ({
+      id: place.id,
+      name: place.displayName?.text ?? "Diplomatic mission",
+      address: place.formattedAddress ?? "",
+      phone: place.internationalPhoneNumber ?? null,
+      website: place.websiteUri ?? null,
+      mapsUrl: place.googleMapsUri ?? null,
+      location: place.location
+        ? { lat: place.location.latitude, lng: place.location.longitude }
+        : null,
+    }));
+    result.googleMapsAttribution = result.embassyContacts.length > 0;
+    return result;
+  }
+
   async findOne(
     userId: string,
     id: string,
