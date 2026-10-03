@@ -144,36 +144,37 @@ export default function HotelDashboardPage() {
               {dashboard.recentGuests.map(
                 (guest) => (
 
-                  <Link
+                  <div
                     key={guest.id}
-                    href={`/hotel-booking/${guest.id}`}
+                    className="rounded-xl border border-gray-200 p-4 hover:bg-gray-50 transition"
                   >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-                    <div className="rounded-xl border border-gray-200 p-4 hover:bg-gray-50 transition cursor-pointer">
-
-                      <div className="flex items-center justify-between">
-
-                        <div>
-
-                          <p className="font-semibold">
-                            {guest.guestName}
-                          </p>
-
-                          <p className="text-sm text-gray-500 mt-1">
-                            Room {guest.room}
-                          </p>
-
-                        </div>
-
-                        <p className="text-sm text-gray-400">
-                          {guest.checkedInAt}
+                      <Link
+                        href={`/hotel-booking/${guest.id}`}
+                        className="min-w-0"
+                      >
+                        <p className="font-semibold">
+                          {guest.guestName}
                         </p>
 
-                      </div>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Room {guest.room}
+                        </p>
+
+                        <p className="text-xs text-gray-400 mt-1">
+                          {guest.checkedInAt}
+                        </p>
+                      </Link>
+
+                      <Link href={`/hotel-booking/${guest.id}/c-form`}>
+                        <Button variant="secondary">
+                          C-Form / Form III
+                        </Button>
+                      </Link>
 
                     </div>
-
-                  </Link>
+                  </div>
 
                 )
               )}
