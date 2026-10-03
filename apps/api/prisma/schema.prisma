@@ -55,6 +55,8 @@ model Booking {
 
   qrCode             String?
 
+  cForm              CForm?
+
   hotelCheckedInBy   String?
 
   createdAt          DateTime @default(now())
@@ -104,4 +106,15 @@ enum VerificationStatus {
   PENDING
   VERIFIED
   REJECTED
+}
+
+model CForm {
+  id                 String   @id @default(uuid())
+  bookingId          String   @unique
+  booking            Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  data               String
+  savedAt            DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([bookingId])
 }
