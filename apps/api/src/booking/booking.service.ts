@@ -426,9 +426,13 @@ const payload =
 
     const stops: Array<{ id: string; name: string; location: { lat: number; lng: number } }> = [];
     const hotelName = booking.hotelName?.trim();
+    let hotelResolved = false;
     if (hotelName) {
       const hotel = await searchPlace(hotelName + " in " + destination);
-      if (hotel) stops.push(hotel);
+      if (hotel) {
+        stops.push(hotel);
+        hotelResolved = true;
+      }
     }
 
     for (const activity of activityCandidates) {
@@ -440,8 +444,7 @@ const payload =
       throw new BadRequestException("We couldn't resolve enough places to build this day's route. Try adding more specific activity names.");
     }
 
-    const hasHotel = Boolean(hotelName && stops[0]?.name.toLowerCase().includes(hotelName.toLowerCase()));
-    const routeStops = hasHotel && stops.length >= 2 ? [...stops, stops[0]] : stops;
+    const routeStops = hotelResolved && stops.length >= 2 ? [...stops, stops[0]] : stops;
     const origin = routeStops[0];
     const destinationStop = routeStops[routeStops.length - 1];
     const intermediates = routeStops.slice(1, -1).map((stop) => ({
