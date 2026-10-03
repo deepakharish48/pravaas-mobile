@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { api } from "@/lib/api";
 
@@ -226,7 +227,12 @@ export default function HotelBookingPage() {
 
         </Card>
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-3">
+          <Link href={`/hotel-booking/${id}/c-form`}>
+            <Button>
+              Prepare Form III / Form C
+            </Button>
+          </Link>
 
           <Button
             variant="secondary"
@@ -236,7 +242,6 @@ export default function HotelBookingPage() {
           >
             Back to Dashboard
           </Button>
-
         </div>
 
       </Container>
