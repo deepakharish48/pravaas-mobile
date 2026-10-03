@@ -381,6 +381,112 @@ const payload =
     }));
   }
 
+  async buildItineraryRoute(userId: string, id: string, dayIndex: number) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
+    if (!booking) throw new NotFoundException("Booking not found");
+    if (!Number.isInteger(dayIndex) || dayIndex < 0) throw new BadRequestException("Invalid itinerary day.");
+
+    let itinerary: any = null;
+    try { itinerary = booking.itineraryData ? JSON.parse(booking.itineraryData) : null; }
+    catch { throw new BadRequestException("The saved itinerary is not valid."); }
+
+    const day = itinerary?.days?.[dayIndex];
+    if (!day || !Array.isArray(day.activities)) throw new BadRequestException("That itinerary day could not be found.");
+
+    const destination = booking.destination?.trim() || itinerary.destination?.trim();
+    if (!destination) throw new BadRequestException("Set a destination before planning a route.");
+
+    const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
+    if (!apiKey) throw new BadRequestException("Routes are not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
+
+    const searchPlace = async (query: string) => {
+      const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": "places.id,places.displayName,places.location",
+        },
+        body: JSON.stringify({ textQuery: query, maxResultCount: 1 }),
+      });
+      if (!response.ok) return null;
+      const data: any = await response.json();
+      const place = data.places?.[0];
+      if (!place?.location) return null;
+      return {
+        id: place.id,
+        name: place.displayName?.text ?? query,
+        location: { lat: place.location.latitude, lng: place.location.longitude },
+      };
+    };
+
+    const activityCandidates = day.activities
+      .filter((activity: any) => typeof activity?.name === "string" && activity.name.trim())
+      .slice(0, 6);
+
+    const stops: Array<{ id: string; name: string; location: { lat: number; lng: number } }> = [];
+    const hotelName = booking.hotelName?.trim();
+    if (hotelName) {
+      const hotel = await searchPlace(hotelName + " in " + destination);
+      if (hotel) stops.push(hotel);
+    }
+
+    for (const activity of activityCandidates) {
+      const place = await searchPlace(activity.name.trim() + " in " + destination);
+      if (place && !stops.some((stop) => stop.id === place.id)) stops.push(place);
+    }
+
+    if (stops.length < 2) {
+      throw new BadRequestException("We couldn't resolve enough places to build this day's route. Try adding more specific activity names.");
+    }
+
+    const hasHotel = Boolean(hotelName && stops[0]?.name.toLowerCase().includes(hotelName.toLowerCase()));
+    const routeStops = hasHotel && stops.length >= 2 ? [...stops, stops[0]] : stops;
+    const origin = routeStops[0];
+    const destinationStop = routeStops[routeStops.length - 1];
+    const intermediates = routeStops.slice(1, -1).map((stop) => ({
+      location: { latLng: { latitude: stop.location.lat, longitude: stop.location.lng } },
+    }));
+
+    const response = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline",
+      },
+      body: JSON.stringify({
+        origin: { location: { latLng: { latitude: origin.location.lat, longitude: origin.location.lng } } },
+        destination: { location: { latLng: { latitude: destinationStop.location.lat, longitude: destinationStop.location.lng } } },
+        intermediates,
+        travelMode: "DRIVE",
+        routingPreference: "TRAFFIC_AWARE",
+        computeAlternativeRoutes: false,
+        polylineQuality: "OVERVIEW",
+        polylineEncoding: "ENCODED_POLYLINE",
+        languageCode: "en-IN",
+        units: "METRIC",
+      }),
+    });
+
+    if (!response.ok) {
+      this.logger.warn("Google Routes request failed: " + response.status);
+      throw new BadRequestException("The route could not be calculated right now.");
+    }
+
+    const data: any = await response.json();
+    const route = data.routes?.[0];
+    if (!route?.polyline?.encodedPolyline) throw new BadRequestException("Google could not calculate a route for this day.");
+
+    return {
+      dayIndex,
+      stops: routeStops.map((stop, index) => ({ ...stop, order: index + 1 })),
+      distanceMeters: route.distanceMeters ?? 0,
+      durationSeconds: Number.parseFloat(String(route.duration ?? "0").replace("s", "")) || 0,
+      encodedPolyline: route.polyline.encodedPolyline,
+    };
+  }
+
   async findOne(
     userId: string,
     id: string,
