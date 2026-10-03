@@ -36,6 +36,11 @@ export class BookingController {
   }
 
 
+  @Post(":id/itinerary/route")
+  buildItineraryRoute(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { dayIndex?: number }) {
+    return this.bookingService.buildItineraryRoute(req.user.id, id, Number(body.dayIndex));
+  }
+
   @Post(":id/itinerary/save")
   saveItinerary(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { itinerary: any }) {
     return this.bookingService.updateItinerary(req.user.id, id, body.itinerary);

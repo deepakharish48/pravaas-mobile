@@ -14,9 +14,17 @@ type MapPlace = {
   location?: { lat: number; lng: number } | null;
 };
 
+export type MapRoute = {
+  encodedPolyline: string;
+  stops: Array<{ id: string; name: string; location: { lat: number; lng: number }; order: number }>;
+  distanceMeters: number;
+  durationSeconds: number;
+};
+
 type PravaasMapProps = {
   destination?: string;
   places?: MapPlace[];
+  route?: MapRoute | null;
   className?: string;
 };
 
@@ -53,11 +61,28 @@ function loadGoogleMaps() {
   return googleMapsLoader;
 }
 
-export default function PravaasMap({ destination, places = [], className = "" }: PravaasMapProps) {
+function decodePolyline(encoded: string) {
+  const points: Array<{ lat: number; lng: number }> = [];
+  let index = 0, lat = 0, lng = 0;
+  while (index < encoded.length) {
+    let shift = 0, result = 0, byte = 0;
+    do { byte = encoded.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+    lat += result & 1 ? ~(result >> 1) : result >> 1;
+    shift = 0; result = 0;
+    do { byte = encoded.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+    lng += result & 1 ? ~(result >> 1) : result >> 1;
+    points.push({ lat: lat / 1e5, lng: lng / 1e5 });
+  }
+  return points;
+}
+
+export default function PravaasMap({ destination, places = [], route = null, className = "" }: PravaasMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const placeMarkersRef = useRef<any[]>([]);
+  const routePolylineRef = useRef<any>(null);
+  const routeMarkersRef = useRef<any[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [statusMessage, setStatusMessage] = useState("Loading map…");
 
@@ -101,6 +126,10 @@ export default function PravaasMap({ destination, places = [], className = "" }:
       markerRef.current = null;
       placeMarkersRef.current.forEach((marker) => marker.setMap(null));
       placeMarkersRef.current = [];
+      routeMarkersRef.current.forEach((marker) => marker.setMap(null));
+      routeMarkersRef.current = [];
+      if (routePolylineRef.current) routePolylineRef.current.setMap(null);
+      routePolylineRef.current = null;
       mapRef.current = null;
     };
   }, []);
@@ -123,6 +152,36 @@ export default function PravaasMap({ destination, places = [], className = "" }:
 
         placeMarkersRef.current.forEach((marker) => marker.setMap(null));
         placeMarkersRef.current = [];
+        routeMarkersRef.current.forEach((marker) => marker.setMap(null));
+        routeMarkersRef.current = [];
+        if (routePolylineRef.current) {
+          routePolylineRef.current.setMap(null);
+          routePolylineRef.current = null;
+        }
+
+        if (route?.encodedPolyline) {
+          const path = decodePolyline(route.encodedPolyline);
+          routePolylineRef.current = new google.maps.Polyline({
+            map: mapRef.current,
+            path,
+            geodesic: true,
+            strokeOpacity: 0.85,
+            strokeWeight: 5,
+          });
+          const bounds = new google.maps.LatLngBounds();
+          route.stops.forEach((stop) => {
+            const marker = new google.maps.Marker({
+              map: mapRef.current,
+              position: stop.location,
+              title: stop.order + ". " + stop.name,
+              label: String(stop.order),
+            });
+            routeMarkersRef.current.push(marker);
+            bounds.extend(stop.location);
+          });
+          if (!bounds.isEmpty()) mapRef.current.fitBounds(bounds, 70);
+          return;
+        }
 
         const validPlaces = places.filter((place) => place.location);
         if (!validPlaces.length) return;
@@ -149,7 +208,7 @@ export default function PravaasMap({ destination, places = [], className = "" }:
 
     void updateMap();
     return () => { cancelled = true; };
-  }, [destination, places, status]);
+  }, [destination, places, route, status]);
   async function geocodeDestination(google: any, map: any, query: string) {
     const geocoder = new google.maps.Geocoder();
     const result = await geocoder.geocode({ address: query });
