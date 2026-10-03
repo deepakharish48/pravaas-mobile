@@ -50,6 +50,7 @@ export default function ItineraryPlanner(props: Props) {
 
   const selectedDayIndex = itinerary.days[activeDay] ? activeDay : 0;
   const selectedDay = itinerary.days[selectedDayIndex];
+  const currentItinerary: Itinerary = itinerary;
 
   async function buildRoute(dayIndex: number) {
     setActiveDay(dayIndex);
@@ -68,21 +69,21 @@ export default function ItineraryPlanner(props: Props) {
 
   function updateActivity(dayIndex: number, activityIndex: number, field: keyof Activity, value: string) {
     onItineraryChange({
-      ...itinerary,
-      days: itinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: day.activities.map((activity, ai) => ai !== activityIndex ? activity : { ...activity, [field]: value }) }),
+      ...currentItinerary,
+      days: currentItinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: day.activities.map((activity, ai) => ai !== activityIndex ? activity : { ...activity, [field]: value }) }),
     });
   }
 
   function updateDayTitle(dayIndex: number, value: string) {
-    onItineraryChange({ ...itinerary, days: itinerary.days.map((day, index) => index === dayIndex ? { ...day, title: value } : day) });
+    onItineraryChange({ ...currentItinerary, days: currentItinerary.days.map((day, index) => index === dayIndex ? { ...day, title: value } : day) });
   }
 
   function removeActivity(dayIndex: number, activityIndex: number) {
-    onItineraryChange({ ...itinerary, days: itinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: day.activities.filter((_, ai) => ai !== activityIndex) }) });
+    onItineraryChange({ ...currentItinerary, days: currentItinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: day.activities.filter((_, ai) => ai !== activityIndex) }) });
   }
 
   function addActivity(dayIndex: number) {
-    onItineraryChange({ ...itinerary, days: itinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: [...day.activities, { time: "Anytime", name: "", description: "" }] }) });
+    onItineraryChange({ ...currentItinerary, days: currentItinerary.days.map((day, di) => di !== dayIndex ? day : { ...day, activities: [...day.activities, { time: "Anytime", name: "", description: "" }] }) });
   }
 
   return (
