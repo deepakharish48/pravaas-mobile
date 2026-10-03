@@ -2,6 +2,7 @@
 
 import { use, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import BottomNav from "@/components/BottomNav";
 import Button from "@/components/UI/Button";
@@ -62,10 +63,12 @@ function formatSpeed(kmh: number) {
 
 export default function DriveModePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const searchParams = useSearchParams();
+  const initialDay = Math.max(0, Number.parseInt(searchParams.get("day") ?? "0", 10) || 0);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
-  const [activeDay, setActiveDay] = useState(0);
+  const [activeDay, setActiveDay] = useState(initialDay);
   const [destinationIndex, setDestinationIndex] = useState(0);
   const [currentLocation, setCurrentLocation] = useState<LocationPoint | null>(null);
   const [route, setRoute] = useState<DriveRoute | null>(null);
