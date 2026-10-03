@@ -99,6 +99,13 @@ export class BookingController {
     );
   }
 
+  @Get("traveller-info")
+  travellerInfo(
+    @Request() req: { user: { id: string } },
+  ) {
+    return this.bookingService.getTravellerInfo(req.user.id);
+  }
+
   /**
    * Booking Details
    */
