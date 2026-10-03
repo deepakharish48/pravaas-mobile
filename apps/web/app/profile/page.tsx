@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
@@ -90,6 +91,19 @@ export default function ProfilePage() {
           </div>
 
         </Card>
+
+        <div className="mt-5">
+          <Link
+            href="/info"
+            className="flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50 p-4 transition hover:border-blue-200 hover:bg-blue-100"
+          >
+            <div>
+              <p className="font-semibold text-blue-950">Traveller information</p>
+              <p className="mt-1 text-sm text-blue-800">Emergency help, embassy contacts and India immigration info</p>
+            </div>
+            <span className="text-lg text-blue-700" aria-hidden="true">→</span>
+          </Link>
+        </div>
 
         <div className="mt-6">
           <Button
