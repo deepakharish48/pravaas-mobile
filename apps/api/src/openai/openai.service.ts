@@ -24,6 +24,39 @@ VISA
 Only return the JSON object, no other text or comments.
 Use null for missing fields. Dates must be YYYY-MM-DD.`;
 
+const SHIKA_TRAVEL_KEYWORDS = [
+  "travel", "trip", "itinerary", "destination", "hotel", "stay", "booking",
+  "flight", "airport", "train", "bus", "taxi", "cab", "metro", "route",
+  "directions", "map", "restaurant", "cafe", "food", "museum", "temple",
+  "beach", "tourist", "attraction", "sightseeing", "shopping", "market",
+  "nightlife", "family", "experience", "activity", "visit", "places",
+  "nearby", "weather", "packing", "visa", "passport", "currency", "local",
+  "tour", "tourism", "drive", "driving", "fuel", "petrol", "diesel",
+  "ev", "electric vehicle", "road", "traffic", "parking", "cuisine",
+  "vegetarian", "vegan",
+];
+
+function isShikaTravelRelated(
+  message: string,
+  context: { destination?: string | null; hotelName?: string | null },
+) {
+  const text = message.toLowerCase().trim();
+
+  if (/^(hi|hello|hey|thanks|thank you|good morning|good afternoon|good evening)\b/.test(text)) {
+    return true;
+  }
+
+  if (context.destination && text.includes(context.destination.toLowerCase())) {
+    return true;
+  }
+
+  if (context.hotelName && text.includes(context.hotelName.toLowerCase())) {
+    return true;
+  }
+
+  return SHIKA_TRAVEL_KEYWORDS.some((keyword) => text.includes(keyword));
+}
+
 @Injectable()
 export class OpenaiService {
   private readonly logger = new Logger(OpenaiService.name);
@@ -259,18 +292,34 @@ Include one entry for each calendar day from check-in through the day before che
     history: Array<{ role: string; content: string }>;
     context: { destination?: string | null; hotelName?: string | null; checkIn?: string; checkOut?: string; guests?: number | null; itinerary?: any };
   }): Promise<{ reply: string }> {
+    if (!isShikaTravelRelated(input.message, input.context)) {
+      return {
+        reply: "I’m Shika, your Pravaas travel companion. I’m here to help with your trip—destinations, hotels, places to visit, food, routes, transport, itinerary ideas, and other travel questions. Ask me something about your trip and I’ll be happy to help!",
+      };
+    }
+
     if (!this.client) throw new ServiceUnavailableException("Shika is not configured. Set OPENAI_API_KEY.");
+
     const response = await this.client.chat.completions.create({
       model: "gpt-4o",
       temperature: 0.7,
-      max_tokens: 700,
+      max_tokens: 450,
       messages: [
-        { role: "system", content: `You are Shika, a friendly, warm female-voiced AI travel companion for Pravaas. Be welcoming, concise, and practical. Personalize answers using this booking context: ${JSON.stringify(input.context)}. Never claim live opening hours, prices, availability, or bookings unless explicitly provided by a live places result. If asked to change the itinerary, explain that the guest can edit and save it in My itinerary. Do not reveal private booking details beyond this booking context.` },
+        {
+          role: "system",
+          content: `You are Shika, a friendly, warm female-voiced AI travel companion for Pravaas. You are a travel-only assistant. Be welcoming, concise, practical, and helpful. Only answer questions relevant to travel or the guest's Pravaas trip. If a question is unrelated to travel, politely redirect the guest to travel topics.
+
+Personalize answers using this booking context: ${JSON.stringify(input.context)}. Never claim live opening hours, prices, availability, or bookings unless explicitly provided by a live places result. If asked to change the itinerary, explain that the guest can edit and save it in My itinerary. Do not reveal private booking details beyond this booking context.`,
+        },
         ...input.history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
         { role: "user", content: input.message },
       ],
     });
-    return { reply: response.choices[0]?.message?.content?.trim() || "I'm sorry, I couldn't think of a response. Could you try again?" };
+
+    return {
+      reply: response.choices[0]?.message?.content?.trim() ||
+        "I’m here to help with your travel plans. What would you like to explore?",
+    };
   }
 
   private getMimeType(filePath: string): string {
