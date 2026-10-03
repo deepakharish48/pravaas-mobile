@@ -8,7 +8,9 @@ import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import BottomNav from "@/components/BottomNav";
 import ItineraryPlanner from "@/components/itinerary/ItineraryPlanner";
+import PravaasMap from "@/components/maps/PravaasMap";
 
+type Activity = { time: string; name: string; description: string };
 type Itinerary = { destination: string; days: Array<{ date: string; title: string; activities: Activity[] }> };
 type Booking = { id: string; hotelName?: string | null; guestName?: string | null; checkIn?: string | null; checkOut?: string | null; numberOfGuests?: number | null; status?: string | null; destination?: string | null; itinerary?: Itinerary | null };
 type Tab = "discover" | "itinerary" | "assistant";
