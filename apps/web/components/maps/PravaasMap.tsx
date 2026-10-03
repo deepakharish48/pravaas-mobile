@@ -97,12 +97,13 @@ export default function PravaasMap({ destination, className = "" }: PravaasMapPr
 
   useEffect(() => {
     if (status !== "ready" || !destination?.trim() || !mapRef.current) return;
+    const nextDestination: string = destination;
     let cancelled = false;
 
     async function updateDestination() {
       try {
         const google = await loadGoogleMaps();
-        if (!cancelled) await geocodeDestination(google, mapRef.current, destination);
+        if (!cancelled) await geocodeDestination(google, mapRef.current, nextDestination);
       } catch {
         // Keep the existing map visible if a new destination cannot be geocoded.
       }
