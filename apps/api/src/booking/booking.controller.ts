@@ -41,6 +41,28 @@ export class BookingController {
     return this.bookingService.buildItineraryRoute(req.user.id, id, Number(body.dayIndex));
   }
 
+  @Post(":id/drive/route")
+  buildDriveRoute(
+    @Request() req: { user: { id: string } },
+    @Param("id") id: string,
+    @Body() body: {
+      currentLocation?: { lat?: number; lng?: number };
+      destinationName?: string;
+      destinationLocation?: { lat?: number; lng?: number };
+    },
+  ) {
+    return this.bookingService.buildDriveRoute(req.user.id, id, body);
+  }
+
+  @Post(":id/drive/nearby")
+  findDriveNearbyPlaces(
+    @Request() req: { user: { id: string } },
+    @Param("id") id: string,
+    @Body() body: { lat?: number; lng?: number; category?: string },
+  ) {
+    return this.bookingService.findDriveNearbyPlaces(req.user.id, id, body);
+  }
+
   @Post(":id/itinerary/save")
   saveItinerary(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { itinerary: any }) {
     return this.bookingService.updateItinerary(req.user.id, id, body.itinerary);
