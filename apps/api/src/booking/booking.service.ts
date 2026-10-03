@@ -563,17 +563,24 @@ const payload =
     }
 
     const data: any = await response.json();
-    result.embassyContacts = (data.places ?? []).slice(0, 5).map((place: any) => ({
-      id: place.id,
-      name: place.displayName?.text ?? "Diplomatic mission",
-      address: place.formattedAddress ?? "",
-      phone: place.internationalPhoneNumber ?? null,
-      website: place.websiteUri ?? null,
-      mapsUrl: place.googleMapsUri ?? null,
-      location: place.location
-        ? { lat: place.location.latitude, lng: place.location.longitude }
-        : null,
-    }));
+    const diplomaticTerms = /embassy|consulate|high commission|diplomatic mission/i;
+    result.embassyContacts = (data.places ?? [])
+      .filter((place: any) => {
+        const name = place.displayName?.text ?? "";
+        return diplomaticTerms.test(name);
+      })
+      .slice(0, 5)
+      .map((place: any) => ({
+        id: place.id,
+        name: place.displayName?.text ?? "Diplomatic mission",
+        address: place.formattedAddress ?? "",
+        phone: place.internationalPhoneNumber ?? null,
+        website: place.websiteUri ?? null,
+        mapsUrl: place.googleMapsUri ?? null,
+        location: place.location
+          ? { lat: place.location.latitude, lng: place.location.longitude }
+          : null,
+      }));
     result.googleMapsAttribution = result.embassyContacts.length > 0;
     return result;
   }
