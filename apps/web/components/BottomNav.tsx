@@ -11,7 +11,7 @@ const items = [
   { key: "home", label: "Home", icon: "⌂", href: "/dashboard" },
   { key: "itinerary", label: "Itinerary", icon: "▤", href: "/travel-history" },
   { key: "wallet", label: "Travel wallet", icon: "▣", href: "/identity" },
-  { key: "more", label: "More", icon: "•••", href: "/profile" },
+  { key: "more", label: "More", icon: "•••", href: "/more" },
 ];
 
 export default function BottomNav() {
