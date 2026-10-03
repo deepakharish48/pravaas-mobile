@@ -7,10 +7,8 @@ import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import BottomNav from "@/components/BottomNav";
-import PravaasMap from "@/components/maps/PravaasMap";
 import ItineraryPlanner from "@/components/itinerary/ItineraryPlanner";
 
-type Activity = { time: string; name: string; description: string };
 type Itinerary = { destination: string; days: Array<{ date: string; title: string; activities: Activity[] }> };
 type Booking = { id: string; hotelName?: string | null; guestName?: string | null; checkIn?: string | null; checkOut?: string | null; numberOfGuests?: number | null; status?: string | null; destination?: string | null; itinerary?: Itinerary | null };
 type Tab = "discover" | "itinerary" | "assistant";
@@ -89,10 +87,6 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
       setItinerary(saved); setDestination(saved.destination); setSaveMessage("Your changes are saved.");
     } catch (err: any) { setSaveMessage(err?.message ?? "Could not save your changes."); }
     finally { setSaving(false); }
-  }
-
-  function updateActivity(dayIndex: number, activityIndex: number, field: keyof Activity, value: string) {
-    setItinerary((current) => current ? ({ ...current, days: current.days.map((day, di) => di !== dayIndex ? day : ({ ...day, activities: day.activities.map((activity, ai) => ai !== activityIndex ? activity : ({ ...activity, [field]: value })) })) }) : current);
   }
 
   const categorySearchTerms: Record<string, string> = {
