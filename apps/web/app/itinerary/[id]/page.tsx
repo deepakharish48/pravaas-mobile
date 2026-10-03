@@ -112,7 +112,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
         setPlacesError("");
         return next;
       }
-      const query = next.map((item) => categorySearchTerms[item] ?? item).join(" and ");
+      const query = next.map((item) => categorySearchTerms[item] ?? item).join(", ");
       setPlaceQuery(query);
       void searchPlaces(query);
       return next;
