@@ -362,7 +362,7 @@ const payload =
     if (!apiKey) throw new BadRequestException("Live recommendations are not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
     const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey, "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.rating,places.googleMapsUri,places.primaryTypeDisplayName" },
+      headers: { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey, "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.rating,places.googleMapsUri,places.primaryTypeDisplayName,places.location" },
       body: JSON.stringify({ textQuery: `${query || "popular attractions"} in ${destination}`, maxResultCount: 8 }),
     });
     if (!response.ok) {
@@ -377,6 +377,7 @@ const payload =
       rating: place.rating ?? null,
       category: place.primaryTypeDisplayName?.text ?? "",
       url: place.googleMapsUri ?? null,
+      location: place.location ? { lat: place.location.latitude, lng: place.location.longitude } : null,
     }));
   }
 
