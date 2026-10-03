@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { api } from "@/lib/api";
 import Button from "@/components/UI/Button";
 import PravaasMap, { type MapRoute } from "@/components/maps/PravaasMap";
@@ -90,7 +91,7 @@ export default function ItineraryPlanner(props: Props) {
     <section className="mt-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">My itinerary</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">{itinerary.destination}</h2><p className="mt-1 text-sm text-slate-500">Pick a day to see its route and edit the plan.</p></div>
-        <div className="flex gap-2"><Button disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Save changes"}</Button><Button disabled={!destination.trim() || generating} onClick={onRegenerate}>{generating ? "Generating…" : "Regenerate"}</Button></div>
+        <div className="flex flex-wrap gap-2"><Link href={`/drive/${id}?day=${selectedDayIndex}`} className="inline-flex items-center rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-800">🚗 Drive Mode</Link><Button disabled={saving} onClick={onSave}>{saving ? "Saving…" : "Save changes"}</Button><Button disabled={!destination.trim() || generating} onClick={onRegenerate}>{generating ? "Generating…" : "Regenerate"}</Button></div>
       </div>
       {saveMessage && <p role="status" className="mb-3 text-sm text-emerald-700">{saveMessage}</p>}
       {generationError && <p role="alert" className="mb-3 text-sm text-red-700">{generationError}</p>}

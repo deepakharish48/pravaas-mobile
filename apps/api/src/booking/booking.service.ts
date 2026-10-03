@@ -585,6 +585,186 @@ const payload =
     return result;
   }
 
+
+  async buildDriveRoute(
+    userId: string,
+    id: string,
+    input: {
+      currentLocation?: { lat?: number; lng?: number };
+      destinationName?: string;
+      destinationLocation?: { lat?: number; lng?: number };
+    },
+  ) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
+    if (!booking) throw new NotFoundException("Booking not found");
+
+    const lat = Number(input.currentLocation?.lat);
+    const lng = Number(input.currentLocation?.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      throw new BadRequestException("A valid current location is required.");
+    }
+
+    const destinationName = input.destinationName?.trim();
+    if (!destinationName || destinationName.length > 160) {
+      throw new BadRequestException("Choose a destination before starting Drive Mode.");
+    }
+
+    const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
+    if (!apiKey) throw new BadRequestException("Drive Mode is not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
+
+    let destinationLat = Number(input.destinationLocation?.lat);
+    let destinationLng = Number(input.destinationLocation?.lng);
+    let destinationPlaceId: string | null = null;
+    let resolvedName = destinationName;
+
+    if (!Number.isFinite(destinationLat) || !Number.isFinite(destinationLng)) {
+      const destinationContext = booking.destination?.trim() || destinationName;
+      const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": "places.id,places.displayName,places.location",
+        },
+        body: JSON.stringify({
+          textQuery: destinationName + " in " + destinationContext,
+          maxResultCount: 1,
+        }),
+      });
+      if (!response.ok) throw new BadRequestException("We couldn't find that destination right now.");
+      const data: any = await response.json();
+      const place = data.places?.[0];
+      if (!place?.location) throw new BadRequestException("We couldn't find that destination. Try a more specific place name.");
+      destinationLat = place.location.latitude;
+      destinationLng = place.location.longitude;
+      destinationPlaceId = place.id ?? null;
+      resolvedName = place.displayName?.text ?? destinationName;
+    }
+
+    const destination: any = destinationPlaceId
+      ? { placeId: destinationPlaceId }
+      : { location: { latLng: { latitude: destinationLat, longitude: destinationLng } } };
+
+    const response = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
+      },
+      body: JSON.stringify({
+        origin: { location: { latLng: { latitude: lat, longitude: lng } } },
+        destination,
+        travelMode: "DRIVE",
+        routingPreference: "TRAFFIC_AWARE",
+        computeAlternativeRoutes: false,
+        polylineQuality: "OVERVIEW",
+        polylineEncoding: "ENCODED_POLYLINE",
+        languageCode: "en-IN",
+        units: "METRIC",
+      }),
+    });
+
+    if (!response.ok) {
+      this.logger.warn("Drive Mode route request failed: " + response.status);
+      throw new BadRequestException("The driving route could not be calculated right now.");
+    }
+
+    const data: any = await response.json();
+    const route = data.routes?.[0];
+    if (!route?.polyline?.encodedPolyline) {
+      throw new BadRequestException("Google could not calculate a driving route to this destination.");
+    }
+
+    return {
+      destination: {
+        name: resolvedName,
+        location: { lat: destinationLat, lng: destinationLng },
+        placeId: destinationPlaceId,
+      },
+      distanceMeters: route.distanceMeters ?? 0,
+      durationSeconds: Number.parseFloat(String(route.duration ?? "0").replace("s", "")) || 0,
+      encodedPolyline: route.polyline.encodedPolyline,
+    };
+  }
+
+  async findDriveNearbyPlaces(
+    userId: string,
+    id: string,
+    input: { lat?: number; lng?: number; category?: string },
+  ) {
+    const booking = await this.prisma.booking.findFirst({ where: { id, userId }, select: { id: true } });
+    if (!booking) throw new NotFoundException("Booking not found");
+
+    const lat = Number(input.lat);
+    const lng = Number(input.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      throw new BadRequestException("A valid current location is required.");
+    }
+
+    const category = input.category ?? "food";
+    const typeMap: Record<string, string[]> = {
+      food: ["restaurant", "cafe"],
+      fuel: ["gas_station"],
+      ev: ["electric_vehicle_charging_station"],
+      roadside: ["car_repair", "towing_service"],
+    };
+    const includedTypes = typeMap[category] ?? typeMap.food;
+    const apiKey = this.configService.get<string>("GOOGLE_MAPS_API_KEY");
+    if (!apiKey) throw new BadRequestException("Drive Mode is not configured yet. Set GOOGLE_MAPS_API_KEY on the API.");
+
+    const response = await fetch("https://places.googleapis.com/v1/places:searchNearby", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.googleMapsUri,places.location,places.primaryTypeDisplayName",
+      },
+      body: JSON.stringify({
+        includedTypes,
+        maxResultCount: 6,
+        rankPreference: "DISTANCE",
+        locationRestriction: {
+          circle: {
+            center: { latitude: lat, longitude: lng },
+            radius: 5000,
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      this.logger.warn("Drive Mode nearby search failed: " + response.status);
+      throw new BadRequestException("Nearby places could not be loaded right now.");
+    }
+
+    const data: any = await response.json();
+    return (data.places ?? []).map((place: any) => {
+      const placeLat = place.location?.latitude;
+      const placeLng = place.location?.longitude;
+      return {
+        id: place.id,
+        name: place.displayName?.text ?? "Place",
+        address: place.formattedAddress ?? "",
+        category: place.primaryTypeDisplayName?.text ?? "",
+        url: place.googleMapsUri ?? null,
+        location: Number.isFinite(placeLat) && Number.isFinite(placeLng) ? { lat: placeLat, lng: placeLng } : null,
+        distanceMeters: Number.isFinite(placeLat) && Number.isFinite(placeLng)
+          ? this.distanceBetweenMeters(lat, lng, placeLat, placeLng)
+          : null,
+      };
+    });
+  }
+
+  private distanceBetweenMeters(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const toRad = (value: number) => value * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2
+      + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
   async findOne(
     userId: string,
     id: string,

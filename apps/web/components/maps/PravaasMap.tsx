@@ -25,6 +25,7 @@ type PravaasMapProps = {
   destination?: string;
   places?: MapPlace[];
   route?: MapRoute | null;
+  currentLocation?: { lat: number; lng: number } | null;
   className?: string;
 };
 
@@ -76,13 +77,14 @@ function decodePolyline(encoded: string) {
   return points;
 }
 
-export default function PravaasMap({ destination, places = [], route = null, className = "" }: PravaasMapProps) {
+export default function PravaasMap({ destination, places = [], route = null, currentLocation = null, className = "" }: PravaasMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const placeMarkersRef = useRef<any[]>([]);
   const routePolylineRef = useRef<any>(null);
   const routeMarkersRef = useRef<any[]>([]);
+  const currentMarkerRef = useRef<any>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [statusMessage, setStatusMessage] = useState("Loading map…");
 
@@ -128,6 +130,8 @@ export default function PravaasMap({ destination, places = [], route = null, cla
       placeMarkersRef.current = [];
       routeMarkersRef.current.forEach((marker) => marker.setMap(null));
       routeMarkersRef.current = [];
+      if (currentMarkerRef.current) currentMarkerRef.current.setMap(null);
+      currentMarkerRef.current = null;
       if (routePolylineRef.current) routePolylineRef.current.setMap(null);
       routePolylineRef.current = null;
       mapRef.current = null;
@@ -154,9 +158,30 @@ export default function PravaasMap({ destination, places = [], route = null, cla
         placeMarkersRef.current = [];
         routeMarkersRef.current.forEach((marker) => marker.setMap(null));
         routeMarkersRef.current = [];
+        if (currentMarkerRef.current) {
+          currentMarkerRef.current.setMap(null);
+          currentMarkerRef.current = null;
+        }
         if (routePolylineRef.current) {
           routePolylineRef.current.setMap(null);
           routePolylineRef.current = null;
+        }
+
+        if (currentLocation) {
+          currentMarkerRef.current = new google.maps.Marker({
+            map: mapRef.current,
+            position: currentLocation,
+            title: "Your current location",
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: "#2563eb",
+              fillOpacity: 1,
+              strokeColor: "#ffffff",
+              strokeWeight: 3,
+            },
+            zIndex: 1000,
+          });
         }
 
         if (route?.encodedPolyline) {
@@ -208,7 +233,7 @@ export default function PravaasMap({ destination, places = [], route = null, cla
 
     void updateMap();
     return () => { cancelled = true; };
-  }, [destination, places, route, status]);
+  }, [destination, places, route, currentLocation, status]);
   async function geocodeDestination(google: any, map: any, query: string) {
     const geocoder = new google.maps.Geocoder();
     const result = await geocoder.geocode({ address: query });
