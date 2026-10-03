@@ -6,6 +6,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import IdentityCard from "@/components/IdentityCard";
 import Container from "@/components/UI/Container";
+import BottomNav from "@/components/BottomNav";
 
 type IdentityDocument = {
   id: string;
@@ -30,7 +31,7 @@ export default function IdentityPage() {
   useEffect(() => { void loadDocuments(); }, []);
   const find = (type: string) => documents.find((doc) => doc.documentType === type);
 
-  return <main className="min-h-screen bg-[#f6f8fc] pb-12">
+  return <main className="min-h-screen bg-[#f6f8fc] pb-28">
     <header className="border-b border-slate-200 bg-white"><Container className="max-w-5xl py-4"><Link href="/dashboard" className="text-sm font-semibold text-slate-500 hover:text-slate-900">← Dashboard</Link></Container></header>
     <Container className="max-w-5xl py-8 sm:py-10">
       <div className="mb-8 flex items-center gap-4"><Image src="/logo.png" alt="Pravaas" width={54} height={54} className="rounded-xl" /><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Traveller wallet</p><h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">Your travel documents</h1><p className="mt-1 text-sm text-slate-500">Keep important documents together for your journeys.</p></div></div>
@@ -48,5 +49,6 @@ export default function IdentityPage() {
       </div>}
       <p className="mt-5 text-xs leading-5 text-slate-400">Supported formats: PDF and images, up to 10 MB per file. Custom document names help you identify each upload.</p>
     </Container>
+      <BottomNav />
   </main>;
 }
