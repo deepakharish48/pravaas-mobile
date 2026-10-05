@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { api } from "@/lib/api";
 import IdentityCard from "@/components/IdentityCard";
 import Container from "@/components/UI/Container";
