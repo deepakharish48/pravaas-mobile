@@ -33,7 +33,8 @@ export default function HotelCheckinContent() {
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-[#f6f8fc] flex items-center justify-center lg:pl-64">\n        <HotelNavigation />
+      <main className="min-h-screen bg-[#f6f8fc] flex items-center justify-center lg:pl-64">
+        <HotelNavigation />
         <Card className="max-w-md text-center">
           <h2 className="text-2xl font-bold mb-2">
             No Guest Selected
@@ -76,7 +77,8 @@ export default function HotelCheckinContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] py-6 pb-24 sm:py-8 lg:pl-64 lg:pb-10">\n      <HotelNavigation />
+    <main className="min-h-screen bg-[#f6f8fc] py-6 pb-24 sm:py-8 lg:pl-64 lg:pb-10">
+      <HotelNavigation />
 
       <Container className="max-w-[1100px]">
 
@@ -90,7 +92,9 @@ export default function HotelCheckinContent() {
             className="mb-4"
           />
 
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">Reception operations</p>\n\n          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">Reception operations</p>
+
+          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
             Guest Check-in
           </h1>
 
