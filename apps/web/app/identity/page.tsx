@@ -29,7 +29,7 @@ export default function IdentityPage() {
   useEffect(() => { void loadDocuments(); }, []);
   const find = (type: string) => documents.find((doc) => doc.documentType === type);
 
-  return <main className="min-h-screen bg-[#f6f8fc] pb-28">
+  return <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
     <GuestNavigation />
     <Container className="max-w-5xl py-8 sm:py-10">
       <div className="mb-8 flex items-center gap-4"><Image src="/logo.png" alt="Pravaas" width={54} height={54} className="rounded-xl" /><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Traveller wallet</p><h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">Your travel documents</h1><p className="mt-1 text-sm text-slate-500">Keep important documents together for your journeys.</p></div></div>
