@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { api } from "@/lib/api";
 import IdentityCard from "@/components/IdentityCard";
 import Container from "@/components/UI/Container";
