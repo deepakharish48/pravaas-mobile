@@ -36,9 +36,8 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
       <Container className="max-w-3xl">
-
-        <GuestNavigation />
 
         <div className="mb-8 mt-8 md:mt-10">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Account</p>
@@ -92,9 +91,6 @@ export default function ProfilePage() {
             </div>
             <span className="text-lg text-blue-700" aria-hidden="true">→</span>
           </Link>
-        </div>
-
-        <div>
           <Button
             variant="secondary"
             onClick={signOut}
