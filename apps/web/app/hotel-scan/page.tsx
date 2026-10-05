@@ -29,22 +29,51 @@ export default function HotelScanPage() {
           return;
         }
 
-        controls =
-          await codeReader.decodeFromVideoDevice(
-            devices[0].deviceId,
-            videoRef.current!,
-            (result) => {
-              if (!result) return;
+        const isMobile =
+          typeof navigator !== "undefined" &&
+          /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-              controls.stop();
+        const handleResult = (result: any) => {
+          if (!result) return;
 
-              router.push(
-                `/hotel-checkin?payload=${encodeURIComponent(
-                  result.getText()
-                )}`
-              );
-            }
+          controls?.stop();
+
+          router.push(
+            `/hotel-checkin?payload=${encodeURIComponent(
+              result.getText()
+            )}`
           );
+        };
+
+        if (isMobile) {
+          try {
+            controls = await codeReader.decodeFromConstraints(
+              {
+                video: {
+                  facingMode: { exact: "environment" },
+                },
+                audio: false,
+              },
+              videoRef.current!,
+              handleResult
+            );
+            return;
+          } catch {
+            // Some mobile browsers do not support an exact environment constraint.
+            // Fall back to a rear-camera-labelled device when available.
+          }
+        }
+
+        const preferredDevice =
+          devices.find((device) =>
+            /back|rear|environment|world/i.test(device.label)
+          ) ?? devices[0];
+
+        controls = await codeReader.decodeFromVideoDevice(
+          preferredDevice.deviceId,
+          videoRef.current!,
+          handleResult
+        );
       } catch (err) {
         console.error(err);
         alert("Unable to access camera.");
