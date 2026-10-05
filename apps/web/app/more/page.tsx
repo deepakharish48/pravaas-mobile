@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/UI/Container";
+import GuestNavigation from "@/components/GuestNavigation";
 
 const items = [
   {
@@ -28,21 +28,11 @@ const items = [
 
 export default function MorePage() {
   return (
-    <main className="min-h-screen bg-[#f6f8fc] pb-28">
-      <header className="border-b border-slate-200 bg-white">
-        <Container className="max-w-2xl py-5">
-          <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Pravaas" width={44} height={44} className="rounded-xl" />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Pravaas</p>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">More</h1>
-            </div>
-          </div>
-        </Container>
-      </header>
+    <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
 
-      <Container className="max-w-2xl py-6">
-        <div className="space-y-3">
+      <Container className="max-w-3xl py-7 sm:py-10">
+        <div className="grid gap-4 md:grid-cols-2">
           {items.map((item) => (
             <Link
               key={item.href}
