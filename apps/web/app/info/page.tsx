@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import BottomNav from "@/components/BottomNav";
+import GuestNavigation from "@/components/GuestNavigation";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import { api } from "@/lib/api";
@@ -37,14 +37,8 @@ export default function TravellerInfoPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] pb-28">
-      <header className="border-b border-slate-200 bg-white">
-        <Container className="max-w-5xl py-4">
-          <Link href="/profile" className="text-sm font-semibold text-slate-500 hover:text-slate-900">
-            ← More
-          </Link>
-        </Container>
-      </header>
+    <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
 
       <Container className="max-w-3xl py-8 sm:py-10">
         <div className="mb-8">
@@ -191,7 +185,6 @@ export default function TravellerInfoPage() {
         )}
       </Container>
 
-      <BottomNav />
     </main>
   );
 }
