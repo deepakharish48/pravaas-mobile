@@ -38,9 +38,8 @@ export default function TravelHistoryPage() {
 
   return (
     <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
       <Container className="max-w-5xl">
-
-        <GuestNavigation />
 
         <div className="mb-8 mt-8 md:mt-10">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Trips</p>
