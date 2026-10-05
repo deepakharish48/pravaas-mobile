@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
+import HotelNavigation from "@/components/HotelNavigation";
 
 type BookingPayload = {
   bookingId: string;
@@ -32,7 +33,7 @@ export default function HotelCheckinContent() {
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#f6f8fc] flex items-center justify-center lg:pl-64">\n        <HotelNavigation />
         <Card className="max-w-md text-center">
           <h2 className="text-2xl font-bold mb-2">
             No Guest Selected
@@ -75,11 +76,11 @@ export default function HotelCheckinContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <main className="min-h-screen bg-[#f6f8fc] py-6 pb-24 sm:py-8 lg:pl-64 lg:pb-10">\n      <HotelNavigation />
 
-      <Container className="max-w-3xl">
+      <Container className="max-w-[1100px]">
 
-        <div className="flex flex-col items-center mb-10">
+        <div className="mb-6">
 
           <Image
             src="/logo.png"
@@ -89,7 +90,7 @@ export default function HotelCheckinContent() {
             className="mb-4"
           />
 
-          <h1 className="text-3xl font-bold">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">Reception operations</p>\n\n          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
             Guest Check-in
           </h1>
 
@@ -163,7 +164,7 @@ export default function HotelCheckinContent() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid gap-5 sm:grid-cols-2">
 
               <div>
                 <p className="text-sm text-gray-500">
@@ -195,7 +196,7 @@ export default function HotelCheckinContent() {
 
         </Card>
 
-        <div className="mt-8 space-y-4">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
 
           <Button
             onClick={approveCheckin}
