@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 import { api } from "@/lib/api";
 
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
+import GuestNavigation from "@/components/GuestNavigation";
 
 type Booking = {
   id: string;
@@ -37,27 +37,14 @@ export default function TravelHistoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
-      <Container className="max-w-lg">
+    <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
+      <Container className="max-w-5xl">
 
-        <div className="mb-8 flex flex-col items-center">
-
-          <Image
-            src="/logo.png"
-            alt="Pravaas"
-            width={64}
-            height={64}
-            className="mb-4"
-          />
-
-          <h1 className="text-3xl font-bold">
-            My Travels
-          </h1>
-
-          <p className="mt-2 text-center text-sm text-gray-500">
-            Your past and upcoming hotel stays.
-          </p>
-
+        <div className="mb-8 mt-8 md:mt-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Trips</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">My Travels</h1>
+          <p className="mt-2 text-sm text-slate-500">Your past and upcoming hotel stays.</p>
         </div>
 
         {bookings.length === 0 ? (
@@ -69,7 +56,7 @@ export default function TravelHistoryPage() {
 
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
 
             {bookings.map((booking) => (
               <Link

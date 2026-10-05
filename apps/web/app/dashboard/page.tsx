@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import Container from "@/components/UI/Container";
-import BottomNav from "@/components/BottomNav";
+import GuestNavigation from "@/components/GuestNavigation";
 
 type Booking = { id: string; hotelName?: string | null; destination?: string | null; checkIn?: string | null; checkOut?: string | null };
 
@@ -15,16 +14,8 @@ export default function DashboardPage() {
   const latest = bookings[0];
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] pb-28">
-      <header className="border-b border-slate-200/80 bg-white">
-        <Container className="flex max-w-5xl items-center justify-between py-4">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Pravaas" width={42} height={42} className="rounded-xl" />
-            <span className="text-xl font-bold tracking-tight text-slate-900">Pravaas</span>
-          </Link>
-          <Link href="/profile" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50">My account</Link>
-        </Container>
-      </header>
+    <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+      <GuestNavigation />
 
       <Container className="max-w-5xl py-7 sm:py-10">
         <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 px-6 py-8 text-white shadow-xl sm:px-10 sm:py-11">
@@ -57,7 +48,6 @@ export default function DashboardPage() {
         {latest && <p className="mt-4 text-center text-xs text-slate-400">Continue planning: {latest.hotelName || latest.destination || "Your latest stay"}</p>}
       </Container>
 
-      <BottomNav />
     </main>
   );
 }
