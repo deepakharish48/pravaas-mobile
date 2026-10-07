@@ -10,6 +10,30 @@ export const metadata: Metadata = {
 
   applicationName: "Pravaas",
 
+  icons: {
+    icon: [
+      {
+        url: "/icon",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
+    shortcut: [
+      {
+        url: "/icon",
+        type: "image/png",
+        sizes: "512x512",
+      },
+    ],
+    apple: [
+      {
+        url: "/apple-icon",
+        type: "image/png",
+        sizes: "180x180",
+      },
+    ],
+  },
+
   appleWebApp: {
     capable: true,
     title: "Pravaas",
