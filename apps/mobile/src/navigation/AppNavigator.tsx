@@ -12,6 +12,8 @@ export function AppNavigator() {
   const { colors } = usePravaasTheme();
   useEffect(() => { hydrate(); }, [hydrate]);
   if (!isHydrated) return <View style={[styles.loading, { backgroundColor: colors.background }]}><ActivityIndicator size="large" color={colors.primary} /></View>;
-  return <Stack.Navigator screenOptions={{ headerShown: false }}><>{token ? <Stack.Screen name="Main" component={MainNavigator} /> : <Stack.Screen name="Auth" component={AuthNavigator} />}</></Stack.Navigator>;
+  return <Stack.Navigator screenOptions={{ headerShown: false }}>
+    {token ? <Stack.Screen name="Main" component={MainNavigator} /> : <Stack.Screen name="Auth" component={AuthNavigator} />}
+  </Stack.Navigator>;
 }
 const styles = StyleSheet.create({ loading: { flex: 1, alignItems: "center", justifyContent: "center" } });
