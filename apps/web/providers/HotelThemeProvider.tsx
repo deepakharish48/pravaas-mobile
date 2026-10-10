@@ -43,7 +43,11 @@ export function HotelThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const update = () => {
-      if (theme === "system") setResolvedTheme(media.matches ? "dark" : "light");
+      if (theme === "system") {
+        const nextTheme = media.matches ? "dark" : "light";
+        setResolvedTheme(nextTheme);
+        document.documentElement.dataset.hotelTheme = nextTheme;
+      }
     };
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
