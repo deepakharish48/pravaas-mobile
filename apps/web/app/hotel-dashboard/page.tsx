@@ -26,10 +26,10 @@ export default function HotelDashboardPage() {
 
   useEffect(() => { api("/hotel/dashboard").then(setDashboard).catch(console.error); }, []);
 
-  if (!dashboard) return <main className="flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Loading dashboard…</main>;
+  if (!dashboard) return <main className="hotel-workspace flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Loading dashboard…</main>;
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] lg:pl-64">
+    <main className="hotel-workspace min-h-screen bg-[#f6f8fc] lg:pl-64">
       <HotelNavigation />
       <Container className="max-w-[1500px] py-6 pb-24 sm:py-8 lg:pb-10">
         <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
