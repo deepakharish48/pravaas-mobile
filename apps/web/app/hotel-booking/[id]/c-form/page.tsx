@@ -88,9 +88,9 @@ export default function CFormPage() {
     finally { setSaving(false); }
   }
 
-  if (loading || !data) return <main className="min-h-screen bg-[#f6f8fc] flex items-center justify-center"><p className="text-slate-500">{loading ? "Loading Form III…" : error}</p></main>;
+  if (loading || !data) return <main className="hotel-workspace min-h-screen bg-[#f6f8fc] flex items-center justify-center"><p className="text-slate-500">{loading ? "Loading Form III…" : error}</p></main>;
 
-  return <main className="min-h-screen bg-[#f6f8fc] py-6 pb-24 sm:py-8 lg:pl-64 lg:pb-10">
+  return <main className="hotel-workspace min-h-screen bg-[#f6f8fc] py-6 pb-24 sm:py-8 lg:pl-64 lg:pb-10">
     <HotelNavigation />
     <Container className="max-w-[1400px]">
       <div className="mb-6 flex flex-col gap-3 print:hidden sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><Image src="/logo.png" alt="Pravaas" width={48} height={48} className="rounded-xl" /><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Hotel compliance</p><h1 className="text-2xl font-bold text-slate-950">Form III (earlier Form C)</h1></div></div><Link href={`/hotel-booking/${id}`} className="text-sm font-semibold text-slate-500">← Booking</Link></div>
