@@ -308,6 +308,9 @@ importers:
 
   packages/ui:
     dependencies:
+      expo-secure-store:
+        specifier: ~15.0.8
+        version: 15.0.8(expo@54.0.35)
       react:
         specifier: ^19.1.0
         version: 19.1.0

@@ -5,22 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "pravaas",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "backgroundColor": "#2563eb"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.pravaas.mobile"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#2563eb"
-      },
-      "package": "com.pravaas.mobile"
-    },
-    "plugins": [
-      "expo-secure-store"
-    ]
+    "userInterfaceStyle": "automatic",
+    "splash": { "backgroundColor": "#080F20" },
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.pravaas.mobile" },
+    "android": { "adaptiveIcon": { "backgroundColor": "#080F20" }, "package": "com.pravaas.mobile" },
+    "plugins": ["expo-secure-store"]
   }
 }
