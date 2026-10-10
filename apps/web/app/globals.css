@@ -152,3 +152,62 @@ input, textarea, select { outline: none; }
   .hotel-workspace { background: #fff !important; color: #000 !important; }
   .hotel-workspace .bg-white { background: #fff !important; }
 }
+
+
+/* Traveller PWA theme. The shared provider persists the selected appearance. */
+.traveller-workspace {
+  --traveller-bg: #f6f8fc;
+  --traveller-surface: #ffffff;
+  --traveller-surface-muted: #f8fafc;
+  --traveller-text: #0f172a;
+  --traveller-text-muted: #64748b;
+  --traveller-border: #e2e8f0;
+  min-height: 100vh;
+  background: var(--traveller-bg);
+  color: var(--traveller-text);
+  color-scheme: light;
+}
+[data-hotel-theme="dark"] .traveller-workspace {
+  --traveller-bg: #080f20;
+  --traveller-surface: #111c33;
+  --traveller-surface-muted: #182641;
+  --traveller-text: #f1f5f9;
+  --traveller-text-muted: #b6c2d5;
+  --traveller-border: #334155;
+  color-scheme: dark;
+}
+.traveller-workspace .bg-white { background-color: var(--traveller-surface) !important; }
+.traveller-workspace .bg-slate-50,
+.traveller-workspace[class*="bg-[#f6f8fc]"] { background-color: var(--traveller-bg) !important; }
+.traveller-workspace .text-slate-950,
+.traveller-workspace .text-slate-900,
+.traveller-workspace .text-slate-800 { color: var(--traveller-text) !important; }
+.traveller-workspace .text-slate-700,
+.traveller-workspace .text-slate-600,
+.traveller-workspace .text-gray-500,
+.traveller-workspace .text-slate-500 { color: var(--traveller-text-muted) !important; }
+.traveller-workspace .border-slate-100,
+.traveller-workspace .border-slate-200,
+.traveller-workspace .border-slate-300,
+.traveller-workspace .border-t { border-color: var(--traveller-border) !important; }
+.traveller-workspace [class*="bg-blue-50"] { background-color: var(--traveller-surface-muted); }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-info-card { background: #202b50; border-color: #334155; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-info-card .text-blue-950,
+[data-hotel-theme="dark"] .traveller-workspace .traveller-info-card .text-blue-800,
+[data-hotel-theme="dark"] .traveller-workspace .traveller-info-card .text-blue-700 { color: #c7d2fe !important; }
+[data-hotel-theme="dark"] .traveller-workspace button[aria-pressed="true"] { background: #202b50; border-color: #818cf8; }
+[data-hotel-theme="dark"] .traveller-workspace button[aria-pressed="false"] { background: #111c33; border-color: #334155; }
+.traveller-workspace input,
+.traveller-workspace textarea,
+.traveller-workspace select { background: var(--traveller-surface); color: var(--traveller-text); border-color: var(--traveller-border); }
+.traveller-workspace input::placeholder,
+.traveller-workspace textarea::placeholder { color: var(--traveller-text-muted); }
+
+/* Traveller navigation is outside the page content wrapper. */
+[data-hotel-theme="dark"] .traveller-navigation { background-color: rgb(17 28 51 / 96%) !important; border-color: #334155 !important; }
+[data-hotel-theme="dark"] .traveller-navigation .text-slate-950,
+[data-hotel-theme="dark"] .traveller-navigation .text-slate-700 { color: #f1f5f9 !important; }
+[data-hotel-theme="dark"] .traveller-navigation .text-slate-600,
+[data-hotel-theme="dark"] .traveller-navigation .text-slate-400 { color: #b6c2d5 !important; }
+[data-hotel-theme="dark"] .traveller-navigation a[aria-current="page"] { background-color: #202b50; color: #c7d2fe !important; }
+[data-hotel-theme="dark"] .traveller-navigation a:hover { background-color: #182641; }
