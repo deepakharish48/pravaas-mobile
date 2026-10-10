@@ -317,3 +317,33 @@ input, textarea, select { outline: none; }
     color: #000 !important;
   }
 }
+
+
+/* Fix: dark theme must cover page canvases, not only the cards placed on them.
+   Traveller routes use several arbitrary Tailwind background colours and translucent
+   slate utilities, so normalize those page-level surfaces while Midnight is active. */
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) {
+  background: #080f20 !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) #__next,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) main,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .min-h-screen {
+  background-color: #080f20;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) [class*="bg-[#f6f8fc]"],
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) [class*="bg-[#f8fafc]"],
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) [class*="bg-[#f1f5f9]"],
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-50\/50,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-50\/70,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-50\/80,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-gray-100 {
+  background-color: #080f20 !important;
+}
+/* Keep nested cards on the intended elevated surface rather than flattening them. */
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white\/95,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white\/90,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-50,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-100 {
+  background-color: #111c33 !important;
+}
