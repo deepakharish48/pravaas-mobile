@@ -125,6 +125,18 @@ input, textarea, select { outline: none; }
 .hotel-workspace textarea:focus-visible,
 .hotel-workspace select:focus-visible { outline-color: #818cf8; }
 
+[data-hotel-theme="dark"] .hotel-workspace .bg-white\\/95 { background-color: rgb(17 28 51 / 0.96) !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-blue-600 {
+  background-color: #818cf8 !important;
+  color: #080f20 !important;
+}
+[data-hotel-theme="dark"] .hotel-workspace .bg-amber-50 { background-color: #422006 !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-amber-800 { color: #fde68a !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-red-50 { background-color: #450a0a !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-red-700 { color: #fecaca !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-blue-50 { background-color: #172554 !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-blue-900 { color: #dbeafe !important; }
+[data-hotel-theme="dark"] .hotel-workspace .border-blue-100 { border-color: #1e3a8a !important; }
 [data-hotel-theme="dark"] .hotel-workspace .bg-slate-950 {
   background-color: #0b1427 !important;
 }
