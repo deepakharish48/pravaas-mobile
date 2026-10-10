@@ -22,20 +22,23 @@ function systemTheme(): "light" | "dark" {
 export function HotelThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<HotelTheme>("system");
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const initial: HotelTheme = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
     setTheme(initial);
     setResolvedTheme(initial === "system" ? systemTheme() : initial);
+    setReady(true);
   }, []);
 
   useEffect(() => {
+    if (!ready) return;
     const resolved = theme === "system" ? systemTheme() : theme;
     setResolvedTheme(resolved);
     document.documentElement.dataset.hotelTheme = resolved;
     window.localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+  }, [theme, ready]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
