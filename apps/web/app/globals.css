@@ -211,3 +211,109 @@ input, textarea, select { outline: none; }
 [data-hotel-theme="dark"] .traveller-navigation .text-slate-400 { color: #b6c2d5 !important; }
 [data-hotel-theme="dark"] .traveller-navigation a[aria-current="page"] { background-color: #202b50; color: #c7d2fe !important; }
 [data-hotel-theme="dark"] .traveller-navigation a:hover { background-color: #182641; }
+
+
+/* Global Traveller PWA theme layer.
+   Keep hotel screens isolated: they continue to use .hotel-workspace tokens above.
+   The theme provider sets data-hotel-theme on <html>, so every traveller route,
+   including routes without the .traveller-workspace wrapper, responds consistently. */
+:root[data-hotel-theme="dark"] {
+  --background: #080f20;
+  --foreground: #f1f5f9;
+  --secondary: #b6c2d5;
+  --border: #334155;
+  --surface: #111c33;
+  --surface-muted: #182641;
+  color-scheme: dark;
+}
+:root[data-hotel-theme="light"] {
+  color-scheme: light;
+}
+:root[data-hotel-theme="dark"] body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* App-wide semantic overrides for existing utility-based Traveller pages.
+   Exclude the Hotel SaaS workspace to prevent cross-product visual regressions. */
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) main,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) section,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) article {
+  border-color: var(--border);
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white\/95,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-white\/90 {
+  background-color: var(--surface) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-50,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-100,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-gray-50 {
+  background-color: var(--surface-muted) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-950,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-900,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-800,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-gray-900 {
+  color: var(--foreground) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-700,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-600,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-500,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-slate-400,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-gray-600,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-gray-500 {
+  color: var(--secondary) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-slate-100,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-slate-200,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-slate-300,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-gray-100,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-gray-200,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--border) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) input,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) textarea,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) select {
+  background-color: var(--surface);
+  color: var(--foreground);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) input::placeholder,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) textarea::placeholder {
+  color: var(--secondary);
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .traveller-navigation {
+  background-color: rgb(17 28 51 / 96%) !important;
+  border-color: var(--border) !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .traveller-navigation a[aria-current="page"] {
+  background-color: #202b50;
+  color: #c7d2fe !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .traveller-navigation a:hover {
+  background-color: #182641;
+}
+/* Keep intentionally high-contrast, branded CTA and hero gradients intact. */
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-blue-50,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) [class*="bg-indigo-50"] {
+  background-color: #202b50 !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-blue-950,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-blue-900,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-blue-800,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .text-blue-700 {
+  color: #c7d2fe !important;
+}
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-blue-100,
+:root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .border-indigo-100 {
+  border-color: #334155 !important;
+}
+@media print {
+  :root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
