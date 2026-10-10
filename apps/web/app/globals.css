@@ -3,67 +3,39 @@
 :root {
   --background: #f6f8fc;
   --foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-strong: #1d4ed8;
+  --primary: #4f46e5;
+  --primary-strong: #4338ca;
   --secondary: #64748b;
   --border: #e2e8f0;
   --surface: #ffffff;
   --surface-muted: #f8fafc;
-  --radius-sm: 0.75rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
   --content-max: 80rem;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-  background: var(--background);
-}
+html { scroll-behavior: smooth; background: var(--background); }
 
 body {
   margin: 0;
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
-button,
-a,
-input,
-textarea,
-select {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  cursor: pointer;
-}
-
-input,
-textarea,
-select {
-  outline: none;
-}
-
-:focus-visible {
-  outline: 3px solid rgb(37 99 235 / 0.35);
-  outline-offset: 2px;
-}
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+input, textarea, select { outline: none; }
+:focus-visible { outline: 3px solid #818cf8; outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
@@ -72,48 +44,111 @@ select {
 }
 
 /* Shared responsive primitives for the whole Pravaas web/PWA. */
-.pravaas-page {
+.pravaas-page { min-height: 100vh; background: var(--background); }
+.pravaas-content { width: min(100%, var(--content-max)); margin-inline: auto; padding-inline: 1rem; }
+@media (min-width: 640px) { .pravaas-content { padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .pravaas-content { padding-inline: 2rem; } }
+.pravaas-section { width: 100%; }
+@media (min-width: 1024px) { .pravaas-section { max-width: 80rem; margin-inline: auto; } }
+@media (min-width: 768px) { .mobile-only { display: none !important; } }
+@media (max-width: 767px) { .desktop-only { display: none !important; } }
+
+/* Hotel workspace design tokens: shared across dashboards, guest records and reception flows. */
+.hotel-workspace {
+  --workspace-bg: #f8fafc;
+  --workspace-surface: #ffffff;
+  --workspace-surface-muted: #f1f5f9;
+  --workspace-text: #0f172a;
+  --workspace-text-muted: #475569;
+  --workspace-text-subtle: #64748b;
+  --workspace-border: #e2e8f0;
+  --workspace-primary: #4f46e5;
+  --workspace-primary-hover: #4338ca;
+  --workspace-primary-soft: #eef2ff;
+  --workspace-primary-text: #3730a3;
   min-height: 100vh;
-  background: var(--background);
+  background: var(--workspace-bg) !important;
+  color: var(--workspace-text);
+  color-scheme: light;
 }
 
-.pravaas-content {
-  width: min(100%, var(--content-max));
-  margin-inline: auto;
-  padding-inline: 1rem;
+[data-hotel-theme="dark"] .hotel-workspace {
+  --workspace-bg: #080f20;
+  --workspace-surface: #111c33;
+  --workspace-surface-muted: #182641;
+  --workspace-text: #f1f5f9;
+  --workspace-text-muted: #cbd5e1;
+  --workspace-text-subtle: #b6c2d5;
+  --workspace-border: #334155;
+  --workspace-primary: #818cf8;
+  --workspace-primary-hover: #a5b4fc;
+  --workspace-primary-soft: #202b50;
+  --workspace-primary-text: #c7d2fe;
+  color-scheme: dark;
 }
 
-@media (min-width: 640px) {
-  .pravaas-content {
-    padding-inline: 1.5rem;
-  }
+/* Map existing Tailwind utility-based screens onto the semantic tokens without a risky rewrite. */
+.hotel-workspace .bg-white { background-color: var(--workspace-surface) !important; }
+.hotel-workspace .bg-slate-50,
+.hotel-workspace[class*="bg-[#f6f8fc]"] { background-color: var(--workspace-bg) !important; }
+.hotel-workspace .bg-blue-50 { background-color: var(--workspace-primary-soft) !important; }
+.hotel-workspace .text-slate-950,
+.hotel-workspace .text-slate-900,
+.hotel-workspace .text-slate-800 { color: var(--workspace-text) !important; }
+.hotel-workspace .text-slate-700,
+.hotel-workspace .text-slate-600 { color: var(--workspace-text-muted) !important; }
+.hotel-workspace .text-slate-500,
+.hotel-workspace .text-slate-400 { color: var(--workspace-text-subtle) !important; }
+.hotel-workspace .text-blue-700,
+.hotel-workspace .text-blue-800 { color: var(--workspace-primary-text) !important; }
+.hotel-workspace .border-slate-100,
+.hotel-workspace .border-slate-200,
+.hotel-workspace .border-slate-300,
+.hotel-workspace .border-slate-200\/80 { border-color: var(--workspace-border) !important; }
+.hotel-workspace .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--workspace-border) !important; }
+.hotel-workspace .bg-blue-600 { background-color: var(--workspace-primary) !important; }
+.hotel-workspace .hover\:bg-blue-700:hover { background-color: var(--workspace-primary-hover) !important; }
+.hotel-workspace .hover\:text-blue-700:hover,
+.hotel-workspace .hover\:text-blue-800:hover { color: var(--workspace-primary-hover) !important; }
+.hotel-workspace input,
+.hotel-workspace textarea,
+.hotel-workspace select {
+  border-color: var(--workspace-border);
+  background-color: var(--workspace-surface);
+  color: var(--workspace-text);
 }
+.hotel-workspace input::placeholder,
+.hotel-workspace textarea::placeholder { color: var(--workspace-text-subtle); }
+.hotel-workspace a:focus-visible,
+.hotel-workspace button:focus-visible,
+.hotel-workspace input:focus-visible,
+.hotel-workspace textarea:focus-visible,
+.hotel-workspace select:focus-visible { outline-color: #818cf8; }
 
-@media (min-width: 1024px) {
-  .pravaas-content {
-    padding-inline: 2rem;
-  }
+[data-hotel-theme="dark"] .hotel-workspace [class*="bg-white/95"] { background-color: rgb(17 28 51 / 0.96) !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-blue-600 {
+  background-color: #818cf8 !important;
+  color: #080f20 !important;
 }
-
-.pravaas-section {
-  width: 100%;
+[data-hotel-theme="dark"] .hotel-workspace .bg-amber-50 { background-color: #422006 !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-amber-800 { color: #fde68a !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-red-50 { background-color: #450a0a !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-red-700 { color: #fecaca !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-blue-50 { background-color: #172554 !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-blue-900 { color: #dbeafe !important; }
+[data-hotel-theme="dark"] .hotel-workspace .border-blue-100 { border-color: #1e3a8a !important; }
+[data-hotel-theme="dark"] .hotel-workspace .bg-slate-950 {
+  background-color: #0b1427 !important;
 }
-
-@media (min-width: 1024px) {
-  .pravaas-section {
-    max-width: 80rem;
-    margin-inline: auto;
-  }
+[data-hotel-theme="dark"] .hotel-workspace .bg-slate-100,
+[data-hotel-theme="dark"] .hotel-workspace .bg-slate-200 {
+  background-color: var(--workspace-surface-muted) !important;
 }
+[data-hotel-theme="dark"] .hotel-workspace .hover\:bg-slate-50:hover { background-color: var(--workspace-surface-muted) !important; }
+[data-hotel-theme="dark"] .hotel-workspace .text-blue-200 { color: #c7d2fe !important; }
 
-@media (min-width: 768px) {
-  .mobile-only {
-    display: none !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .desktop-only {
-    display: none !important;
-  }
+/* Government Form III must remain white and printable, independent of the workspace theme. */
+@media print {
+  .hotel-workspace { background: #fff !important; color: #000 !important; }
+  .hotel-workspace .bg-white { background: #fff !important; }
 }

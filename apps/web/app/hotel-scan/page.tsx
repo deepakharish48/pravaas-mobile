@@ -37,7 +37,7 @@ export default function HotelScanPage() {
     return () => { controls?.stop(); controls?.dispose?.(); };
   }, [router]);
 
-  return <main className="min-h-screen bg-[#f6f8fc] lg:pl-64">
+  return <main className="hotel-workspace min-h-screen bg-[#f6f8fc] lg:pl-64">
     <HotelNavigation />
     <Container className="max-w-[1100px] py-6 pb-24 sm:py-8 lg:pb-10">
       <div className="mb-6"><p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">Reception operations</p><h1 className="mt-1 text-2xl font-bold text-slate-950 sm:text-3xl">Scan guest QR</h1><p className="mt-1 text-sm text-slate-500">Point the camera at the traveller’s Pravaas QR to begin check-in.</p></div>
