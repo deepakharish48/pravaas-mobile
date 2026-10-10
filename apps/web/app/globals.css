@@ -125,7 +125,7 @@ input, textarea, select { outline: none; }
 .hotel-workspace textarea:focus-visible,
 .hotel-workspace select:focus-visible { outline-color: #818cf8; }
 
-[data-hotel-theme="dark"] .hotel-workspace .bg-white\\/95 { background-color: rgb(17 28 51 / 0.96) !important; }
+[data-hotel-theme="dark"] .hotel-workspace [class*="bg-white/95"] { background-color: rgb(17 28 51 / 0.96) !important; }
 [data-hotel-theme="dark"] .hotel-workspace .bg-blue-600 {
   background-color: #818cf8 !important;
   color: #080f20 !important;
