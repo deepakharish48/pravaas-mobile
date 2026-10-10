@@ -90,7 +90,7 @@ input, textarea, select { outline: none; }
 /* Map existing Tailwind utility-based screens onto the semantic tokens without a risky rewrite. */
 .hotel-workspace .bg-white { background-color: var(--workspace-surface) !important; }
 .hotel-workspace .bg-slate-50,
-.hotel-workspace .bg-[#f6f8fc] { background-color: var(--workspace-bg) !important; }
+.hotel-workspace[class*="bg-[#f6f8fc]"] { background-color: var(--workspace-bg) !important; }
 .hotel-workspace .bg-blue-50 { background-color: var(--workspace-primary-soft) !important; }
 .hotel-workspace .text-slate-950,
 .hotel-workspace .text-slate-900,
