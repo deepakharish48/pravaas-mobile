@@ -39,7 +39,7 @@ export default function GuestNavigation() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 hidden border-b border-slate-200/90 bg-white/95 shadow-sm backdrop-blur md:block">
+      <header className="traveller-navigation sticky top-0 z-50 hidden border-b border-slate-200/90 bg-white/95 shadow-sm backdrop-blur md:block">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
           <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5" aria-label="Pravaas home">
             <Image src="/logo.png" alt="" width={36} height={36} className="rounded-xl" priority />
@@ -79,7 +79,7 @@ export default function GuestNavigation() {
 
       <nav
         aria-label="Primary navigation"
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/90 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_24px_rgba(15,23,42,0.06)] backdrop-blur md:hidden"
+        className="traveller-navigation fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/90 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_24px_rgba(15,23,42,0.06)] backdrop-blur md:hidden"
       >
         <div className="mx-auto flex max-w-md items-stretch justify-around px-2">
           {items.map((item) => {
