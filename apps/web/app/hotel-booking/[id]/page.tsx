@@ -24,10 +24,10 @@ export default function HotelBookingPage() {
 
   useEffect(() => { if (id) api(`/hotel/bookings/${id}`).then(setBooking).catch(console.error).finally(() => setLoading(false)); }, [id]);
 
-  if (loading) return <main className="flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Loading booking…</main>;
+  if (loading) return <main className="hotel-workspace flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Loading booking…</main>;
   if (!booking) return <main className="flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Booking not found.</main>;
 
-  return <main className="min-h-screen bg-[#f6f8fc] lg:pl-64">
+  return <main className="hotel-workspace min-h-screen bg-[#f6f8fc] lg:pl-64">
     <HotelNavigation />
     <Container className="max-w-[1200px] py-6 pb-24 sm:py-8 lg:pb-10">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
