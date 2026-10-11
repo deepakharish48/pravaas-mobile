@@ -374,3 +374,17 @@ input, textarea, select { outline: none; }
 [data-hotel-theme="light"] .traveller-workspace .traveller-shika-card p { color: #475569 !important; }
 [data-hotel-theme="light"] .traveller-workspace .traveller-shika-icon { background: #fff; color: #1d4ed8; }
 [data-hotel-theme="light"] .traveller-workspace .traveller-shika-badge { border-color: #dbeafe; background: #fff; color: #1d4ed8; }
+
+
+/* High-contrast travel status badges for light and Midnight themes. */
+.traveller-workspace .travel-status-checked-in { color: #047857; background: #d1fae5; border: 1px solid #6ee7b7; }
+.traveller-workspace .travel-status-confirmed { color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; }
+.traveller-workspace .travel-status-completed { color: #334155; background: #e2e8f0; border: 1px solid #cbd5e1; }
+.traveller-workspace .travel-status-cancelled { color: #be123c; background: #ffe4e6; border: 1px solid #fda4af; }
+.traveller-workspace .travel-status-pending { color: #075985; background: #e0f2fe; border: 1px solid #7dd3fc; }
+.traveller-workspace .travel-status-dot { background: currentColor; }
+[data-hotel-theme="dark"] .traveller-workspace .travel-status-checked-in { color: #6ee7b7; background: rgba(6, 95, 70, .28); border-color: #047857; }
+[data-hotel-theme="dark"] .traveller-workspace .travel-status-confirmed { color: #fcd34d; background: rgba(146, 64, 14, .28); border-color: #a16207; }
+[data-hotel-theme="dark"] .traveller-workspace .travel-status-completed { color: #cbd5e1; background: rgba(100, 116, 139, .22); border-color: #64748b; }
+[data-hotel-theme="dark"] .traveller-workspace .travel-status-cancelled { color: #fda4af; background: rgba(159, 18, 57, .24); border-color: #be123c; }
+[data-hotel-theme="dark"] .traveller-workspace .travel-status-pending { color: #7dd3fc; background: rgba(7, 89, 133, .25); border-color: #0369a1; }
