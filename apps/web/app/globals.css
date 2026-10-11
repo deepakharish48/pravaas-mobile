@@ -347,3 +347,30 @@ input, textarea, select { outline: none; }
 :root[data-hotel-theme="dark"] body:not(:has(.hotel-workspace)) .bg-slate-100 {
   background-color: #111c33 !important;
 }
+
+
+/* Traveller dashboard: ensure strong text contrast in Midnight mode. */
+.traveller-workspace .traveller-hero {
+  border: 1px solid #263d78;
+  background: radial-gradient(ellipse at 92% 90%, rgba(67, 56, 202, .34), transparent 43%), linear-gradient(125deg, #050d20 0%, #0a1732 52%, #111f52 100%);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .2);
+}
+.traveller-workspace .traveller-hero h1 { color: #f8fafc !important; }
+.traveller-workspace .traveller-hero p { color: #cbd5e1; }
+.traveller-workspace .traveller-hero p:first-of-type { color: #bfdbfe; }
+.traveller-workspace .traveller-hero a:first-of-type { background: #2454f4; color: #fff; }
+.traveller-workspace .traveller-hero a:first-of-type:hover { background: #1d4ed8; }
+.traveller-workspace .traveller-hero a:nth-of-type(2) { border-color: #5576d8; background: rgba(8, 19, 43, .58); color: #eff6ff; }
+.traveller-workspace .traveller-hero a:nth-of-type(2):hover { background: rgba(37, 75, 160, .35); }
+.traveller-workspace .traveller-shika-card { border-color: #3d5fbe; background: linear-gradient(110deg, #102044 0%, #111d3b 100%); color: #f1f5f9; box-shadow: 0 12px 30px rgba(0, 0, 0, .16); }
+.traveller-workspace .traveller-shika-card h2 { color: #f8fafc !important; }
+.traveller-workspace .traveller-shika-card p { color: #c3d1e8 !important; }
+.traveller-workspace .traveller-shika-icon { background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; }
+.traveller-workspace .traveller-shika-badge { border: 1px solid #526fd0; background: #101b38; color: #c7d2fe; }
+.traveller-workspace .traveller-shika-cta { background: #2454f4; color: #fff; }
+.traveller-workspace .traveller-shika-cta:hover { background: #1d4ed8; }
+[data-hotel-theme="light"] .traveller-workspace .traveller-shika-card { border-color: #dbeafe; background: #eff6ff; color: #0f172a; }
+[data-hotel-theme="light"] .traveller-workspace .traveller-shika-card h2 { color: #0f172a !important; }
+[data-hotel-theme="light"] .traveller-workspace .traveller-shika-card p { color: #475569 !important; }
+[data-hotel-theme="light"] .traveller-workspace .traveller-shika-icon { background: #fff; color: #1d4ed8; }
+[data-hotel-theme="light"] .traveller-workspace .traveller-shika-badge { border-color: #dbeafe; background: #fff; color: #1d4ed8; }
