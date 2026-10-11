@@ -14,11 +14,11 @@ export default function DashboardPage() {
   const latest = bookings[0];
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
+    <main className="traveller-workspace min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
       <GuestNavigation />
 
       <Container className="max-w-5xl py-7 sm:py-10">
-        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 px-6 py-8 text-white shadow-xl sm:px-10 sm:py-11">
+        <section className="traveller-hero relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 px-6 py-8 text-white shadow-xl sm:px-10 sm:py-11">
           <div className="pointer-events-none absolute -right-20 -top-28 h-80 w-80 rounded-full border-[48px] border-white/5" />
           <div className="pointer-events-none absolute -right-10 top-20 h-52 w-52 rounded-full border-[32px] border-white/[0.035]" />
           <p className="relative text-xs font-semibold uppercase tracking-[0.22em] text-blue-200">Your journey, made simpler</p>
@@ -30,18 +30,18 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mt-8 rounded-2xl border border-blue-100 bg-blue-50/70 p-5 shadow-sm sm:p-6">
+        <section className="traveller-shika-card mt-8 rounded-2xl border border-blue-100 bg-blue-50/70 p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-lg text-blue-700 shadow-sm">✦</span>
+                <span className="traveller-shika-icon flex h-9 w-9 items-center justify-center rounded-xl bg-white text-lg text-blue-700 shadow-sm">✦</span>
                 <h2 className="text-lg font-bold text-slate-900">Meet Shika</h2>
-                <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700">AI travel companion</span>
+                <span className="traveller-shika-badge rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700">AI travel companion</span>
               </div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">Get ideas for your stay and create a day-by-day itinerary with a little help from Shika.</p>
               {!latest && <p className="mt-2 text-xs text-slate-500">Upload a booking first to start planning your trip.</p>}
             </div>
-            <Link href={latest ? `/itinerary/${latest.id}` : "/travel-history"} className="inline-flex shrink-0 items-center justify-center rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800">{latest ? "Plan with Shika →" : "Choose a trip →"}</Link>
+            <Link href={latest ? `/itinerary/${latest.id}` : "/travel-history"} className="traveller-shika-cta inline-flex shrink-0 items-center justify-center rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800">{latest ? "Plan with Shika →" : "Choose a trip →"}</Link>
           </div>
         </section>
 
