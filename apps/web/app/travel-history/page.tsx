@@ -49,7 +49,16 @@ export default function TravelHistoryPage() {
 
   useEffect(() => {
     api("/bookings")
-      .then(setBookings)
+      .then((data: Booking[]) => {
+        const sorted = [...data].sort((a, b) => {
+          const dateA = new Date(a.checkIn).getTime();
+          const dateB = new Date(b.checkIn).getTime();
+          const safeA = Number.isNaN(dateA) ? Number.NEGATIVE_INFINITY : dateA;
+          const safeB = Number.isNaN(dateB) ? Number.NEGATIVE_INFINITY : dateB;
+          return safeB - safeA;
+        });
+        setBookings(sorted);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
