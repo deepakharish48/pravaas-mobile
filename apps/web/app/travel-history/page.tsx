@@ -18,17 +18,17 @@ type Booking = {
 function statusStyles(status: string) {
   switch (status.toUpperCase()) {
     case "CHECKED_IN":
-      return "border border-emerald-400/40 bg-emerald-400/15 text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/15 dark:text-emerald-300";
+      return "travel-status-checked-in";
     case "CONFIRMED":
-      return "border border-amber-400/50 bg-amber-400/15 text-amber-800 dark:border-amber-300/40 dark:bg-amber-300/15 dark:text-amber-200";
+      return "travel-status-confirmed";
     case "COMPLETED":
-      return "border border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-500/50 dark:bg-slate-400/15 dark:text-slate-200";
+      return "travel-status-completed";
     case "CANCELLED":
-      return "border border-rose-400/40 bg-rose-400/15 text-rose-700 dark:border-rose-400/40 dark:bg-rose-400/15 dark:text-rose-300";
+      return "travel-status-cancelled";
     case "PENDING":
     case "UPCOMING":
     default:
-      return "border border-sky-400/40 bg-sky-400/15 text-sky-700 dark:border-sky-300/40 dark:bg-sky-300/15 dark:text-sky-200";
+      return "travel-status-pending";
   }
 }
 
@@ -87,7 +87,7 @@ export default function TravelHistoryPage() {
                       <p className="mt-1 text-sm text-gray-500">{formatDate(booking.checkIn)} · {formatDate(booking.checkOut)}</p>
                     </div>
                     <span className={`inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-bold tracking-wide ${statusStyles(booking.status)}`}>
-                      <span className={`mr-2 h-1.5 w-1.5 rounded-full ${booking.status.toUpperCase() === "CHECKED_IN" ? "bg-emerald-600 dark:bg-emerald-300" : booking.status.toUpperCase() === "CONFIRMED" ? "bg-amber-600 dark:bg-amber-300" : booking.status.toUpperCase() === "CANCELLED" ? "bg-rose-600 dark:bg-rose-300" : "bg-current"}`} aria-hidden="true" />
+                      <span className={`travel-status-dot mr-2 h-1.5 w-1.5 rounded-full ${booking.status.toUpperCase() === "CHECKED_IN" ? "is-checked-in" : booking.status.toUpperCase() === "CONFIRMED" ? "is-confirmed" : booking.status.toUpperCase() === "CANCELLED" ? "is-cancelled" : ""}`} aria-hidden="true" />
                       {statusLabel(booking.status)}
                     </span>
                   </div>
