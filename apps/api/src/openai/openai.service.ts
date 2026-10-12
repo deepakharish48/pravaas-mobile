@@ -229,6 +229,43 @@ export class OpenaiService {
     }
   }
 
+
+  async analyzeReelFrames(frames: string[]): Promise<string> {
+    if (!this.client) throw new ServiceUnavailableException("Reel analysis is not configured. Set OPENAI_API_KEY.");
+    if (!Array.isArray(frames) || frames.length < 1 || frames.length > 6) {
+      throw new Error("Provide between 1 and 6 sampled frames.");
+    }
+    const safeFrames = frames.filter((frame) =>
+      typeof frame === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(frame) && frame.length <= 1_500_000,
+    );
+    if (!safeFrames.length || safeFrames.length !== frames.length) throw new Error("Frames must be valid JPEG, PNG, or WebP images under the size limit.");
+    const response = await this.client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "Analyze user-provided travel video frames. Identify only likely visible travel places, landmarks, activities, food, signage, and useful itinerary clues. Do not claim certainty about ambiguous locations; label guesses as unverified. Return concise plain text." },
+        { role: "user", content: [
+          { type: "text", text: "These are sampled frames from a travel Reel supplied by the user. Summarize useful travel inspiration, any readable place names, and uncertain visual guesses. Do not infer exact locations without evidence." },
+          ...safeFrames.map((url) => ({ type: "image_url" as const, image_url: { url, detail: "low" as const } })),
+        ] },
+      ],
+      max_tokens: 700,
+      temperature: 0.2,
+    });
+    return response.choices[0]?.message?.content?.trim() || "No useful travel details could be identified in these frames.";
+  }
+
+  async transcribeReelAudio(file: Express.Multer.File): Promise<string> {
+    if (!this.client) throw new ServiceUnavailableException("Audio transcription is not configured. Set OPENAI_API_KEY.");
+    if (!file?.buffer || !file.originalname) throw new Error("Audio file is required.");
+    const allowed = new Set(["audio/mpeg", "audio/mp3", "audio/mp4", "audio/m4a", "audio/wav", "audio/x-wav", "audio/webm", "audio/ogg", "audio/flac", "video/mp4"]);
+    if (!allowed.has(file.mimetype)) throw new Error("Use an MP3, M4A, WAV, WebM, OGG, or FLAC audio file.");
+    if (file.size > 25 * 1024 * 1024) throw new Error("Audio file must be 25 MB or smaller.");
+    const ext = path.extname(file.originalname).toLowerCase() || ".m4a";
+    const upload = await import("openai").then(({ toFile }) => toFile(file.buffer, `reel-audio${ext}`, { type: file.mimetype }));
+    const result = await this.client.audio.transcriptions.create({ model: "whisper-1", file: upload });
+    return result.text?.trim() || "No speech was detected in the provided audio.";
+  }
+
   async generateItinerary(input: {
     destination: string;
     hotelName?: string | null;
