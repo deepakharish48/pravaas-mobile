@@ -100,6 +100,15 @@ export default function QRPage({
           </Link>
         </Card>
 
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link href="/explore" className="block">
+            <Button variant="secondary">✦ Explore trips</Button>
+          </Link>
+          <Link href={`/reel-to-itinerary?bookingId=${qr.bookingId}`} className="block">
+            <Button variant="secondary">Create from a Reel</Button>
+          </Link>
+        </div>
+
         <div className="mt-6 space-y-3">
           <Link href="/dashboard" className="block">
             <Button>Back to Dashboard</Button>

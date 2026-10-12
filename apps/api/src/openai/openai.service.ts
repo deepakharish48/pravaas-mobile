@@ -236,6 +236,7 @@ export class OpenaiService {
     checkOut: string;
     guests?: number | null;
     interests: string[];
+    sourceContext?: string;
   }): Promise<{ destination: string; days: Array<{ date: string; title: string; activities: Array<{ time: string; name: string; description: string }> }> }> {
     if (!this.client) {
       throw new ServiceUnavailableException("AI itinerary generation is not configured. Set OPENAI_API_KEY.");
@@ -247,6 +248,8 @@ Check-in: ${input.checkIn}
 Check-out: ${input.checkOut}
 Guests: ${input.guests ?? "not specified"}
 Interests: ${input.interests.join(", ") || "general sightseeing and local experiences"}
+Traveller-provided inspiration (caption, transcript or notes): ${input.sourceContext || "none provided"}
+Use the supplied text as inspiration. Do not claim you watched or extracted the Reel itself. Prioritize named places and activities in the supplied text and arrange them into a practical route.
 
 Return only a JSON object with this shape:
 {"destination":"...","days":[{"date":"YYYY-MM-DD","title":"Short day theme","activities":[{"time":"Morning","name":"Activity name","description":"One concise helpful sentence"}]}]}

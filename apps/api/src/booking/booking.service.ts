@@ -272,7 +272,7 @@ const payload =
   async generateItinerary(
     userId: string,
     id: string,
-    preferences: { destination?: string; interests?: string[] },
+    preferences: { destination?: string; interests?: string[]; sourceContext?: string },
   ) {
     const booking = await this.prisma.booking.findFirst({
       where: { id, userId },

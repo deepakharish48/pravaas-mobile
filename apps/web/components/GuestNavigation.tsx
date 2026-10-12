@@ -10,6 +10,7 @@ type Booking = { id: string };
 
 const items = [
   { key: "home", label: "Home", icon: "⌂", href: "/dashboard" },
+  { key: "explore", label: "Explore", icon: "✦", href: "/explore" },
   { key: "itinerary", label: "Itinerary", icon: "▤", href: "/travel-history" },
   { key: "wallet", label: "Travel wallet", icon: "▣", href: "/identity" },
   { key: "more", label: "More", icon: "•••", href: "/more" },
@@ -17,6 +18,7 @@ const items = [
 
 function activeFor(pathname: string | null, key: string) {
   if (key === "home") return pathname === "/dashboard";
+  if (key === "explore") return pathname === "/explore" || pathname === "/reel-to-itinerary";
   if (key === "wallet") return pathname?.startsWith("/identity");
   if (key === "itinerary") return pathname?.startsWith("/itinerary") || pathname?.startsWith("/travel-history") || pathname?.startsWith("/booking");
   return pathname === "/more" || pathname?.startsWith("/profile") || pathname?.startsWith("/info") || pathname?.startsWith("/drive");
