@@ -24,7 +24,7 @@ function ReelForm() {
   useEffect(() => { api("/bookings").then((data: Booking[]) => { setBookings(data); setBookingId((current) => current || data[0]?.id || ""); }).catch(() => setBookings([])); }, []);
   const validInstagram = /^https?:\/\/(www\.)?instagram\.com\/(reel|reels|p)\//i.test(url.trim());
   function appendSource(label: string, text: string) {
-    setSourceText((current) => [current.trim(), `[${label}]\\n${text.trim()}`].filter(Boolean).join("\\n\\n"));
+    setSourceText((current) => [current.trim(), `[${label}]\n${text.trim()}`].filter(Boolean).join("\n\n"));
   }
   async function analyzeVideo(file?: File) {
     if (!file) return;
