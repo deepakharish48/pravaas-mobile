@@ -308,6 +308,33 @@ const payload =
     return itinerary;
   }
 
+  async analyzeReelFrames(frames: string[]) {
+    if (!Array.isArray(frames) || frames.length < 1 || frames.length > 6) {
+      throw new BadRequestException("Provide between 1 and 6 sampled frames.");
+    }
+    if (frames.some((frame) => typeof frame !== "string" || frame.length > 1_500_000)) {
+      throw new BadRequestException("Each frame must be a valid image under the size limit.");
+    }
+    try {
+      return { analysis: await this.openaiService.analyzeReelFrames(frames) };
+    } catch (error) {
+      if (error instanceof BadRequestException || error instanceof NotFoundException) throw error;
+      this.logger.warn("Reel frame analysis failed", error);
+      throw new BadRequestException(error instanceof Error ? error.message : "Could not analyze Reel frames.");
+    }
+  }
+
+  async transcribeReelAudio(file: Express.Multer.File) {
+    if (!file) throw new BadRequestException("Choose an audio file first.");
+    if (file.size > 25 * 1024 * 1024) throw new BadRequestException("Audio file must be 25 MB or smaller.");
+    try {
+      return { transcript: await this.openaiService.transcribeReelAudio(file) };
+    } catch (error) {
+      this.logger.warn("Reel audio transcription failed", error);
+      throw new BadRequestException(error instanceof Error ? error.message : "Could not transcribe audio.");
+    }
+  }
+
   async updateItinerary(userId: string, id: string, itinerary: any) {
     const booking = await this.prisma.booking.findFirst({ where: { id, userId } });
     if (!booking) throw new NotFoundException("Booking not found");
