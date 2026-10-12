@@ -257,7 +257,7 @@ export class OpenaiService {
   async transcribeReelAudio(file: Express.Multer.File): Promise<string> {
     if (!this.client) throw new ServiceUnavailableException("Audio transcription is not configured. Set OPENAI_API_KEY.");
     if (!file?.buffer || !file.originalname) throw new Error("Audio file is required.");
-    const allowed = new Set(["audio/mpeg", "audio/mp3", "audio/mp4", "audio/m4a", "audio/wav", "audio/x-wav", "audio/webm", "audio/ogg", "audio/flac", "video/mp4"]);
+    const allowed = new Set(["audio/mpeg", "audio/mp3", "audio/mp4", "audio/m4a", "audio/wav", "audio/x-wav", "audio/webm", "audio/ogg", "audio/flac"]);
     if (!allowed.has(file.mimetype)) throw new Error("Use an MP3, M4A, WAV, WebM, OGG, or FLAC audio file.");
     if (file.size > 25 * 1024 * 1024) throw new Error("Audio file must be 25 MB or smaller.");
     const ext = path.extname(file.originalname).toLowerCase() || ".m4a";
