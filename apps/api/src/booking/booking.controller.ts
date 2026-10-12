@@ -26,7 +26,7 @@ export class BookingController {
   generateItinerary(
     @Request() req: { user: { id: string } },
     @Param("id") id: string,
-    @Body() body: { destination?: string; interests?: string[] },
+    @Body() body: { destination?: string; interests?: string[]; sourceContext?: string },
   ) {
     return this.bookingService.generateItinerary(
       req.user.id,
