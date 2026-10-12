@@ -36,6 +36,24 @@ export class BookingController {
   }
 
 
+  @Post("reel/analyze-frames")
+  analyzeReelFrames(
+    @Body() body: { frames?: string[] },
+  ) {
+    return this.bookingService.analyzeReelFrames(body.frames ?? []);
+  }
+
+  @Post("reel/transcribe-audio")
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: memoryStorage(),
+      limits: { fileSize: 25 * 1024 * 1024 },
+    }),
+  )
+  transcribeReelAudio(@UploadedFile() file: Express.Multer.File) {
+    return this.bookingService.transcribeReelAudio(file);
+  }
+
   @Post(":id/itinerary/route")
   buildItineraryRoute(@Request() req: { user: { id: string } }, @Param("id") id: string, @Body() body: { dayIndex?: number }) {
     return this.bookingService.buildItineraryRoute(req.user.id, id, Number(body.dayIndex));
