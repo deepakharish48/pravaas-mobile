@@ -297,6 +297,7 @@ const payload =
       checkOut: booking.checkOut.toISOString().slice(0, 10),
       guests: booking.numberOfGuests,
       interests,
+      sourceContext: preferences.sourceContext?.trim().slice(0, 6000),
     });
     await this.prisma.booking.update({
       where: { id: booking.id },
