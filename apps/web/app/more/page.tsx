@@ -47,11 +47,6 @@ export default function MorePage() {
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold text-slate-900">{item.title}</span>
                 <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
-                {item.badge ? (
-                  <span className="mt-2 inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
-                    {item.badge}
-                  </span>
-                ) : null}
               </span>
               <span className="text-lg text-slate-400" aria-hidden="true">→</span>
             </Link>
