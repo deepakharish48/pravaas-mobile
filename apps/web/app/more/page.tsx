@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Container from "@/components/UI/Container";
 import GuestNavigation from "@/components/GuestNavigation";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const items = [
   {
@@ -21,19 +22,20 @@ const items = [
     href: "/drive",
     title: "Drive Mode",
     description: "Live route, GPS driving stats and nearby services",
-    badge: "Premium · Coming soon",
     icon: "🚗",
   },
 ];
 
 export default function MorePage() {
+  const { flags } = useFeatureFlags();
+  const visibleItems = items.filter((item) => item.href !== "/drive" || flags.driveMode);
   return (
     <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
       <GuestNavigation />
 
       <Container className="max-w-3xl py-7 sm:py-10">
         <div className="grid gap-4 md:grid-cols-2">
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
