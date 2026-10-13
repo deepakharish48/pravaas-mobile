@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type QRResponse = {
   bookingId: string;
@@ -22,6 +23,7 @@ export default function QRPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { flags } = useFeatureFlags();
 
   const [qr, setQr] = useState<QRResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,14 +102,14 @@ export default function QRPage({
           </Link>
         </Card>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Link href="/explore" className="block">
+        {(flags.explore || flags.reelToItinerary) && <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {flags.explore && <Link href="/explore" className="block">
             <Button variant="secondary">✦ Explore trips</Button>
-          </Link>
-          <Link href={`/reel-to-itinerary?bookingId=${qr.bookingId}`} className="block">
+          </Link>}
+          {flags.reelToItinerary && <Link href={`/reel-to-itinerary?bookingId=${qr.bookingId}`} className="block">
             <Button variant="secondary">Create from a Reel</Button>
-          </Link>
-        </div>
+          </Link>}
+        </div>}
 
         <div className="mt-6 space-y-3">
           <Link href="/dashboard" className="block">
