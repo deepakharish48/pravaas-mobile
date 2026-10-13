@@ -6,10 +6,12 @@ import { Suspense, useEffect, useState } from "react";
 import GuestNavigation from "@/components/GuestNavigation";
 import Container from "@/components/UI/Container";
 import { api } from "@/lib/api";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type Booking = { id: string; destination?: string | null; hotelName?: string | null; checkIn?: string | null; checkOut?: string | null };
 function ReelForm() {
   const router = useRouter();
+  const { flags, loaded } = useFeatureFlags();
   const search = useSearchParams();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingId, setBookingId] = useState(search.get("bookingId") ?? "");
@@ -102,6 +104,8 @@ function ReelForm() {
     } catch (err: any) { setError(err?.message ?? "Could not generate an itinerary. Please try again."); }
     finally { setBusy(false); }
   }
+  if (!loaded) return <main className="min-h-screen bg-[#f6f8fc] p-8 text-slate-600">Loading…</main>;
+  if (!flags.reelToItinerary) return <main className="min-h-screen bg-[#f6f8fc] p-8 text-slate-900"><h1 className="text-xl font-bold">Reel to Itinerary is temporarily unavailable</h1><p className="mt-2 text-sm">This feature is currently disabled.</p><Link href="/explore" className="mt-4 inline-block font-semibold text-indigo-700">Back to Explore</Link></main>;
   return <main className="traveller-workspace min-h-screen bg-[#f6f8fc] pb-24 md:pb-8"><GuestNavigation /><Container className="max-w-3xl py-7 sm:py-10"><Link href="/explore" className="text-sm font-semibold text-indigo-700">← Back to Explore</Link>
     <section className="mt-5 rounded-[2rem] bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-900 p-6 text-white sm:p-9"><p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-200">Reel to itinerary</p><h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Save the inspiration. Build the trip.</h1><p className="mt-3 text-sm leading-6 text-slate-300">Paste a Reel link, analyze sampled video frames, add an audio transcript or notes, and turn travel inspiration into an editable itinerary.</p></section>
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"><div className="space-y-5">

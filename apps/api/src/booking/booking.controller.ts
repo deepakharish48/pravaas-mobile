@@ -7,6 +7,7 @@ import {
   Request,
   UploadedFile,
   UseGuards,
+  ServiceUnavailableException,
   UseInterceptors,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
@@ -14,6 +15,12 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { memoryStorage } from "multer";
 
 import { BookingService } from "./booking.service";
+
+function assertFeatureEnabled(flag: string) {
+  if (process.env[flag]?.trim().toLowerCase() === "false") {
+    throw new ServiceUnavailableException("This feature is temporarily disabled.");
+  }
+}
 
 @Controller("bookings")
 @UseGuards(AuthGuard("jwt"))
@@ -28,6 +35,7 @@ export class BookingController {
     @Param("id") id: string,
     @Body() body: { destination?: string; interests?: string[]; sourceContext?: string },
   ) {
+    if (body.sourceContext?.includes("Instagram inspiration URL:")) assertFeatureEnabled("FEATURE_REEL_TO_ITINERARY_ENABLED");
     return this.bookingService.generateItinerary(
       req.user.id,
       id,
@@ -40,6 +48,7 @@ export class BookingController {
   analyzeReelFrames(
     @Body() body: { frames?: string[] },
   ) {
+    assertFeatureEnabled("FEATURE_REEL_TO_ITINERARY_ENABLED");
     return this.bookingService.analyzeReelFrames(body.frames ?? []);
   }
 
@@ -51,6 +60,7 @@ export class BookingController {
     }),
   )
   transcribeReelAudio(@UploadedFile() file: Express.Multer.File) {
+    assertFeatureEnabled("FEATURE_REEL_TO_ITINERARY_ENABLED");
     return this.bookingService.transcribeReelAudio(file);
   }
 
@@ -69,6 +79,7 @@ export class BookingController {
       destinationLocation?: { lat?: number; lng?: number };
     },
   ) {
+    assertFeatureEnabled("FEATURE_DRIVE_MODE_ENABLED");
     return this.bookingService.buildDriveRoute(req.user.id, id, body);
   }
 
@@ -78,6 +89,7 @@ export class BookingController {
     @Param("id") id: string,
     @Body() body: { lat?: number; lng?: number; category?: string },
   ) {
+    assertFeatureEnabled("FEATURE_DRIVE_MODE_ENABLED");
     return this.bookingService.findDriveNearbyPlaces(req.user.id, id, body);
   }
 

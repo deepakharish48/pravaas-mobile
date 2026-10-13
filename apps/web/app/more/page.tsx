@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Container from "@/components/UI/Container";
 import GuestNavigation from "@/components/GuestNavigation";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const items = [
   {
@@ -21,19 +22,20 @@ const items = [
     href: "/drive",
     title: "Drive Mode",
     description: "Live route, GPS driving stats and nearby services",
-    badge: "Premium · Coming soon",
     icon: "🚗",
   },
 ];
 
 export default function MorePage() {
+  const { flags } = useFeatureFlags();
+  const visibleItems = items.filter((item) => item.href !== "/drive" || flags.driveMode);
   return (
     <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
       <GuestNavigation />
 
       <Container className="max-w-3xl py-7 sm:py-10">
         <div className="grid gap-4 md:grid-cols-2">
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -45,11 +47,6 @@ export default function MorePage() {
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold text-slate-900">{item.title}</span>
                 <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
-                {item.badge ? (
-                  <span className="mt-2 inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
-                    {item.badge}
-                  </span>
-                ) : null}
               </span>
               <span className="text-lg text-slate-400" aria-hidden="true">→</span>
             </Link>

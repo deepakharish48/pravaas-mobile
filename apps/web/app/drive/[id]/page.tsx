@@ -9,6 +9,7 @@ import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import PravaasMap, { type MapRoute } from "@/components/maps/PravaasMap";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type Activity = { time: string; name: string; description: string };
 type Itinerary = { destination: string; days: Array<{ date: string; title: string; activities: Activity[] }> };
@@ -63,6 +64,7 @@ function formatSpeed(kmh: number) {
 
 export default function DriveModePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { flags, loaded } = useFeatureFlags();
   const searchParams = useSearchParams();
   const initialDay = Math.max(0, Number.parseInt(searchParams.get("day") ?? "0", 10) || 0);
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -280,6 +282,8 @@ export default function DriveModePage({ params }: { params: Promise<{ id: string
     }
   }, [route?.destination.name, route?.distanceMeters, driveActive]);
 
+  if (!loaded) return <main className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">Loading…</main>;
+  if (!flags.driveMode) return <main className="flex min-h-screen items-center justify-center bg-slate-950 px-5 text-white"><div className="max-w-md"><h1 className="text-xl font-bold">Drive Mode is temporarily unavailable</h1><p className="mt-2 text-sm text-slate-400">This feature is currently disabled.</p><Link href="/dashboard" className="mt-5 inline-block text-sm font-semibold text-blue-300">Back to Pravaas</Link></div></main>;
   if (loading) return <main className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">Loading Drive Mode…</main>;
   if (pageError || !booking) return <main className="flex min-h-screen items-center justify-center bg-slate-50 px-5"><Card><p className="font-semibold text-slate-900">Trip unavailable</p><p className="mt-2 text-sm text-slate-600">{pageError || "We couldn't find this trip."}</p><Link href="/travel-history" className="mt-5 inline-block text-sm font-semibold text-blue-700">Back to My Travels</Link></Card></main>;
 

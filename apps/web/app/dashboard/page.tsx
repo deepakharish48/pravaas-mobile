@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import Container from "@/components/UI/Container";
 import GuestNavigation from "@/components/GuestNavigation";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type Booking = { id: string; hotelName?: string | null; destination?: string | null; checkIn?: string | null; checkOut?: string | null };
 
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const { flags } = useFeatureFlags();
   useEffect(() => { api("/bookings").then(setBookings).catch(() => setBookings([])); }, []);
   const latest = bookings[0];
 
@@ -30,7 +32,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-sky-50 p-5 shadow-sm sm:p-7">
+        {flags.explore && <section className="mt-8 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-sky-50 p-5 shadow-sm sm:p-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">Explore Pravaas</p>
@@ -39,7 +41,7 @@ export default function DashboardPage() {
             </div>
             <Link href="/explore" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-800">Explore trips →</Link>
           </div>
-        </section>
+        </section>}
 
         <section className="traveller-shika-card mt-8 rounded-2xl border border-blue-100 bg-blue-50/70 p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
