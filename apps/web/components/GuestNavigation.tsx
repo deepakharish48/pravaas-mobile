@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type Booking = { id: string };
 
@@ -27,6 +28,8 @@ function activeFor(pathname: string | null, key: string) {
 export default function GuestNavigation() {
   const pathname = usePathname();
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const { flags } = useFeatureFlags();
+  const visibleItems = items.filter((item) => item.key !== "explore" || flags.explore);
 
   useEffect(() => {
     api("/bookings")
@@ -49,7 +52,7 @@ export default function GuestNavigation() {
           </Link>
 
           <nav aria-label="Primary navigation" className="flex min-w-0 flex-1 items-center gap-1">
-            {items.map((item) => {
+            {visibleItems.map((item) => {
               const active = activeFor(pathname, item.key);
               return (
                 <Link
