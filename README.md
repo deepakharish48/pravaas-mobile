@@ -306,3 +306,25 @@ The old Expo applications remain in the repository as legacy/scaffold code for h
 ## License
 
 Private
+
+
+## Runtime feature flags (Railway)
+
+Pravaas supports runtime feature flags controlled with Railway environment variables. All flags are **enabled by default** when unset; set a value to the literal `false` (case-insensitive) to disable a feature.
+
+| Railway variable | Controls |
+| --- | --- |
+| `FEATURE_EXPLORE_ENABLED` | Explore navigation, dashboard/QR entry points, and the Explore page |
+| `FEATURE_REEL_TO_ITINERARY_ENABLED` | Reel-to-Itinerary page, Reel links, frame/audio analysis endpoints, and Reel-originated itinerary generation |
+| `FEATURE_COMMUNITY_ENABLED` | Runtime flag exposed for community functionality as that functionality is added |
+| `FEATURE_DRIVE_MODE_ENABLED` | Drive Mode navigation, itinerary action, direct page access, and Drive route/nearby API endpoints |
+
+The Next.js app exposes current runtime settings through a non-cached `/api/features` endpoint, so UI settings are read at runtime rather than baked into the frontend build. Configure the variables on the **web service** to control visibility. Also configure `FEATURE_REEL_TO_ITINERARY_ENABLED` and `FEATURE_DRIVE_MODE_ENABLED` on the **API service** to enforce the switches at the server boundary. When disabling or enabling a feature, keep the web and API values in sync. Railway may restart/redeploy a service when variables change.
+
+Example default configuration (all on):
+```env
+FEATURE_EXPLORE_ENABLED=true
+FEATURE_REEL_TO_ITINERARY_ENABLED=true
+FEATURE_COMMUNITY_ENABLED=true
+FEATURE_DRIVE_MODE_ENABLED=true
+```
