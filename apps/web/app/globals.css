@@ -388,3 +388,39 @@ input, textarea, select { outline: none; }
 [data-hotel-theme="dark"] .traveller-workspace .travel-status-completed { color: #cbd5e1; background: rgba(100, 116, 139, .22); border-color: #64748b; }
 [data-hotel-theme="dark"] .traveller-workspace .travel-status-cancelled { color: #fda4af; background: rgba(159, 18, 57, .24); border-color: #be123c; }
 [data-hotel-theme="dark"] .traveller-workspace .travel-status-pending { color: #7dd3fc; background: rgba(7, 89, 133, .25); border-color: #0369a1; }
+
+
+/* Dark-mode contrast fixes for Traveller Explore and itinerary tabs. */
+[data-hotel-theme="dark"] .traveller-workspace section.bg-gradient-to-br {
+  background-image: linear-gradient(135deg, #111c33 0%, #172554 55%, #1e3a8a 100%) !important;
+  border: 1px solid #334155;
+}
+[data-hotel-theme="dark"] .traveller-workspace section.bg-gradient-to-br .text-indigo-200,
+[data-hotel-theme="dark"] .traveller-workspace section.bg-gradient-to-br .text-slate-300 {
+  color: #e2e8f0 !important;
+}
+[data-hotel-theme="dark"] .traveller-workspace section.bg-gradient-to-br a.bg-white {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+[data-hotel-theme="dark"] .dark-tab-selected {
+  background-color: #a5b4fc !important;
+  border-color: #c7d2fe !important;
+  color: #0b1020 !important;
+}
+[data-hotel-theme="dark"] .dark-tab-unselected {
+  background-color: #182641 !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+[data-hotel-theme="dark"] .dark-tab-unselected:hover {
+  background-color: #263657 !important;
+  color: #ffffff !important;
+}
+[data-hotel-theme="dark"] .traveller-workspace .text-indigo-700,
+[data-hotel-theme="dark"] .traveller-workspace .text-indigo-800 {
+  color: #a5b4fc;
+}
+[data-hotel-theme="dark"] .traveller-workspace .border-indigo-100 {
+  border-color: #334155;
+}
