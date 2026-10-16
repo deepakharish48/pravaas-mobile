@@ -331,10 +331,16 @@ Include one entry for each calendar day from check-in through the day before che
     message: string;
     history: Array<{ role: string; content: string }>;
     context: { destination?: string | null; hotelName?: string | null; checkIn?: string; checkOut?: string; guests?: number | null; itinerary?: any };
-  }): Promise<{ reply: string }> {
+  }): Promise<{ reply: string; suggestions: string[] }> {
+    const fallbackSuggestions = [
+      input.context.destination ? `Must-see places in ${input.context.destination}?` : "Help me choose places to visit",
+      "Find local food favourites",
+      "Plan a relaxed day",
+    ];
     if (!isShikaTravelRelated(input.message, input.context)) {
       return {
         reply: "I’m Shika, your Pravaas travel companion. I’m here to help with your trip—destinations, hotels, places to visit, food, routes, transport, itinerary ideas, and other travel questions. Ask me something about your trip and I’ll be happy to help!",
+        suggestions: ["Suggest places to visit", "Find local food", "Help plan my itinerary"],
       };
     }
 
@@ -343,23 +349,34 @@ Include one entry for each calendar day from check-in through the day before che
     const response = await this.client.chat.completions.create({
       model: "gpt-4o",
       temperature: 0.7,
-      max_tokens: 450,
+      max_tokens: 550,
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
-          content: `You are Shika, a friendly, warm female-voiced AI travel companion for Pravaas. You are a travel-only assistant. Be welcoming, concise, practical, and helpful. Only answer questions relevant to travel or the guest's Pravaas trip. If a question is unrelated to travel, politely redirect the guest to travel topics.
-
-Personalize answers using this booking context: ${JSON.stringify(input.context)}. Never claim live opening hours, prices, availability, or bookings unless explicitly provided by a live places result. If asked to change the itinerary, explain that the guest can edit and save it in My itinerary. Do not reveal private booking details beyond this booking context.`,
+          content: `You are Shika, a friendly AI travel companion for Pravaas. Be welcoming, concise, practical, and helpful. Only answer travel questions; politely redirect unrelated questions. Personalize using this booking context: ${JSON.stringify(input.context)}. Never claim live opening hours, prices, availability, or bookings unless explicitly provided by a live places result. Do not reveal private booking details beyond this context. Return a JSON object with exactly two fields: "reply" (a concise helpful answer as plain text) and "suggestions" (an array of exactly 3 short, natural follow-up prompts the traveller can tap next). Suggestions must be specific to the user's latest message, your answer, and the trip context; avoid generic duplicates and do not include markdown or numbering.`,
         },
         ...input.history.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
         { role: "user", content: input.message },
       ],
     });
 
-    return {
-      reply: response.choices[0]?.message?.content?.trim() ||
-        "I’m here to help with your travel plans. What would you like to explore?",
-    };
+    const raw = response.choices[0]?.message?.content?.trim();
+    try {
+      const parsed = JSON.parse(raw || "{}");
+      const reply = typeof parsed.reply === "string" && parsed.reply.trim()
+        ? parsed.reply.trim()
+        : "I’m here to help with your travel plans. What would you like to explore?";
+      const suggestions = Array.isArray(parsed.suggestions)
+        ? parsed.suggestions.filter((item: unknown): item is string => typeof item === "string").map((item: string) => item.trim()).filter(Boolean).slice(0, 3)
+        : [];
+      return { reply, suggestions: suggestions.length ? suggestions : fallbackSuggestions };
+    } catch {
+      return {
+        reply: raw || "I’m here to help with your travel plans. What would you like to explore?",
+        suggestions: fallbackSuggestions,
+      };
+    }
   }
 
   private getMimeType(filePath: string): string {
