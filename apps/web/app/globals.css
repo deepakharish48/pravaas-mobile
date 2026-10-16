@@ -424,3 +424,30 @@ input, textarea, select { outline: none; }
 [data-hotel-theme="dark"] .traveller-workspace .border-indigo-100 {
   border-color: #334155;
 }
+
+
+/* Dashboard Explore banner: match Meet Shika card dimensions, hierarchy, and theme behavior. */
+.traveller-workspace .traveller-explore-card {
+  border-color: #dbeafe;
+  background: #eff6ff;
+  color: #0f172a;
+}
+.traveller-workspace .traveller-explore-card h2 { color: #0f172a !important; }
+.traveller-workspace .traveller-explore-card p { color: #475569; }
+.traveller-workspace .traveller-explore-icon { background: #fff; color: #1d4ed8; }
+.traveller-workspace .traveller-explore-badge { border: 1px solid #dbeafe; background: #fff; color: #1d4ed8; }
+.traveller-workspace .traveller-explore-cta { background: #1d4ed8; color: #fff; }
+.traveller-workspace .traveller-explore-cta:hover { background: #1e40af; }
+
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-card {
+  border-color: #3d5fbe;
+  background: linear-gradient(110deg, #102044 0%, #111d3b 100%);
+  color: #f1f5f9;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .16);
+}
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-card h2 { color: #f8fafc !important; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-card p { color: #c3d1e8 !important; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-icon { background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-badge { border-color: #526fd0; background: #101b38; color: #c7d2fe; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-cta { background: #2454f4; color: #fff; }
+[data-hotel-theme="dark"] .traveller-workspace .traveller-explore-cta:hover { background: #1d4ed8; }

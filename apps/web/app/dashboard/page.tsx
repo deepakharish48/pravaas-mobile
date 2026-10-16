@@ -32,14 +32,17 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {flags.explore && <section className="mt-8 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-sky-50 p-5 shadow-sm sm:p-7">
+        {flags.explore && <section className="traveller-explore-card mt-8 overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">Explore Pravaas</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Discover trips worth taking.</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">Find curated itineraries, get ideas from travel creators, or turn an Instagram Reel into a trip plan.</p>
+              <div className="flex items-center gap-2">
+                <span className="traveller-explore-icon flex h-9 w-9 items-center justify-center rounded-xl text-lg shadow-sm">⌖</span>
+                <h2 className="text-lg font-bold">Explore Pravaas</h2>
+                <span className="traveller-explore-badge rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide">Discover places</span>
+              </div>
+              <p className="mt-2 max-w-xl text-sm leading-6">Discover trips worth taking, get inspired by travel creators, or turn an Instagram Reel into a trip plan.</p>
             </div>
-            <Link href="/explore" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-800">Explore trips →</Link>
+            <Link href="/explore" className="traveller-explore-cta inline-flex shrink-0 items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold shadow-sm transition">Explore trips →</Link>
           </div>
         </section>}
 
