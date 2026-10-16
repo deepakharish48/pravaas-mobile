@@ -49,6 +49,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   const [chat, setChat] = useState<ChatMessage[]>([{ role: "assistant", content: greeting }]);
   const [message, setMessage] = useState("");
   const [chatBusy, setChatBusy] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[] | null>(null);
   const [chatError, setChatError] = useState("");
   const [listening, setListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
@@ -71,7 +72,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chat, chatBusy]);
 
   const tripDates = useMemo(() => booking?.checkIn && booking?.checkOut ? `${formatDate(booking.checkIn)} – ${formatDate(booking.checkOut)}` : "Your stay", [booking]);
-  const suggestionPills = useMemo(() => {
+  const fallbackSuggestionPills = useMemo(() => {
     const latestAssistant = [...chat].reverse().find((item) => item.role === "assistant")?.content.toLowerCase() ?? "";
     const latestUser = [...chat].reverse().find((item) => item.role === "user")?.content.toLowerCase() ?? "";
     const context = `${latestAssistant} ${latestUser}`;
@@ -89,6 +90,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     if (/weather|rain|sun|outdoor|season/.test(context)) return ["Suggest indoor alternatives", "What should I pack?", "Plan around the weather"];
     return ["Suggest hidden gems", "Find local food favourites", "Build a day-by-day plan"];
   }, [chat, destination]);
+  const suggestionPills = aiSuggestions?.length ? aiSuggestions : fallbackSuggestionPills;
 
 
   async function generateItinerary() {
@@ -143,6 +145,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(0, -1).slice(-10) }) });
       setChat((current) => [...current, { role: "assistant", content: result.reply }]);
+      setAiSuggestions(Array.isArray(result.suggestions) ? result.suggestions.filter((item: unknown): item is string => typeof item === "string" && item.trim().length > 0).slice(0, 3) : null);
     } catch (err: any) { setChatError(err?.message ?? "Shika is having trouble responding. Please try again."); }
     finally { setChatBusy(false); }
   }
