@@ -71,6 +71,25 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chat, chatBusy]);
 
   const tripDates = useMemo(() => booking?.checkIn && booking?.checkOut ? `${formatDate(booking.checkIn)} – ${formatDate(booking.checkOut)}` : "Your stay", [booking]);
+  const suggestionPills = useMemo(() => {
+    const latestAssistant = [...chat].reverse().find((item) => item.role === "assistant")?.content.toLowerCase() ?? "";
+    const latestUser = [...chat].reverse().find((item) => item.role === "user")?.content.toLowerCase() ?? "";
+    const context = `${latestAssistant} ${latestUser}`;
+    if (chat.length === 1) {
+      return destination.trim()
+        ? [`Must-see places in ${destination.trim()}?`, "Find local food favourites", "Plan a relaxed day"]
+        : ["Help me choose a destination", "Find local food favourites", "Plan a weekend trip"];
+    }
+    if (/food|restaurant|cafe|eat|dining|dish|cuisine/.test(context)) return ["Find local favourites", "Suggest cafés nearby", "Any must-try dishes?"];
+    if (/budget|cost|cheap|affordable|expense/.test(context)) return ["Make it more budget-friendly", "Free things to do", "Estimate a day’s costs"];
+    if (/family|child|kid|children/.test(context)) return ["Find family-friendly places", "Suggest indoor activities", "Plan an easy family day"];
+    if (/route|transport|drive|taxi|bus|train|airport|distance/.test(context)) return ["What's the easiest way to get there?", "Find stops along the way", "Suggest nearby essentials"];
+    if (/hotel|stay|check.?in|booking|accommodation/.test(context)) return ["Things to do near my hotel", "Plan around my stay", "Find nearby food"];
+    if (/itinerary|schedule|day trip|activities|visit|sightseeing|attraction/.test(context)) return ["Make the plan more relaxed", "Add local food stops", "Suggest hidden gems"];
+    if (/weather|rain|sun|outdoor|season/.test(context)) return ["Suggest indoor alternatives", "What should I pack?", "Plan around the weather"];
+    return ["Suggest hidden gems", "Find local food favourites", "Build a day-by-day plan"];
+  }, [chat, destination]);
+
 
   async function generateItinerary() {
     setGenerating(true); setGenerationError("");
@@ -124,22 +143,10 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(0, -1).slice(-10) }) });
       setChat((current) => [...current, { role: "assistant", content: result.reply }]);
-      speak(result.reply);
     } catch (err: any) { setChatError(err?.message ?? "Shika is having trouble responding. Please try again."); }
     finally { setChatBusy(false); }
   }
 
-  function speak(text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-IN"; utterance.rate = 0.96; utterance.pitch = 1.08;
-    const voices = window.speechSynthesis.getVoices();
-    const female = voices.find((voice) => /female|woman|samantha|karen|moira|tessa|zira|google.*english.*(uk|us).*female/i.test(voice.name));
-    const english = voices.find((voice) => voice.lang.toLowerCase().startsWith("en"));
-    if (female || english) utterance.voice = female || english || null;
-    window.speechSynthesis.speak(utterance);
-  }
 
   function toggleListening() {
     setVoiceError("");
@@ -212,7 +219,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
         onSave={() => void saveItinerary()}
         onRegenerate={() => void generateItinerary()}
       />}
-      {tab === "assistant" && <section className="mt-7 overflow-hidden rounded-2xl border border-slate-200 bg-white"><div className="border-b border-slate-100 p-5 sm:p-6"><div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-xl text-blue-700">✦</div><div><h2 className="font-bold text-slate-900">Shika</h2><p className="text-xs text-slate-500">Your friendly AI travel companion · Voice enabled</p></div></div></div><div className="max-h-[55vh] min-h-64 space-y-3 overflow-y-auto bg-slate-50 p-5 sm:p-6" aria-live="polite">{chat.map((item, index) => <div key={index} className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}><div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl p-4 text-sm leading-6 shadow-sm ${item.role === "user" ? "rounded-br-sm bg-blue-700 text-white" : "rounded-tl-sm bg-white text-slate-700"}`}>{item.content}</div></div>)}{chatBusy && <p className="text-xs text-slate-500">Shika is typing…</p>}<div ref={chatEndRef} /></div><div className="border-t border-slate-100 p-4"><div className="flex gap-2"><input value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendMessage(); } }} aria-label="Message Shika" placeholder={listening ? "Listening… speak now" : "Ask Shika about your trip…"} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" /><button type="button" onClick={toggleListening} aria-pressed={listening} aria-label={listening ? "Stop voice input" : "Speak to Shika"} className={`rounded-xl border px-4 text-lg ${listening ? "border-red-300 bg-red-50 text-red-700" : "border-slate-200 bg-white text-slate-700"}`}>{listening ? "■" : "🎙️"}</button><button type="button" disabled={!message.trim() || chatBusy} onClick={() => void sendMessage()} className="rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white disabled:bg-slate-200 disabled:text-slate-500">Send</button></div>{voiceError && <p role="alert" className="mt-2 text-xs text-amber-700">{voiceError}</p>}{chatError && <p role="alert" className="mt-2 text-xs text-red-700">{chatError}</p>}<p className="mt-2 text-xs text-slate-400">Tap the microphone and allow access to speak. Your recognized words appear in the chat before Shika replies. Audio uses an available browser voice.</p></div></section>}
+      {tab === "assistant" && <section className="mt-7 overflow-hidden rounded-2xl border border-slate-200 bg-white"><div className="border-b border-slate-100 p-5 sm:p-6"><div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-xl text-blue-700">✦</div><div><h2 className="font-bold text-slate-900">Shika</h2><p className="text-xs text-slate-500">Your friendly AI travel companion · Text chat</p></div></div></div><div className="max-h-[55vh] min-h-64 space-y-3 overflow-y-auto bg-slate-50 p-5 sm:p-6" aria-live="polite">{chat.map((item, index) => <div key={index} className={`flex ${item.role === "user" ? "justify-end" : "justify-start"}`}><div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl p-4 text-sm leading-6 shadow-sm ${item.role === "user" ? "rounded-br-sm bg-blue-700 text-white" : "rounded-tl-sm bg-white text-slate-700"}`}>{item.content}</div></div>)}{chatBusy && <p className="text-xs text-slate-500">Shika is typing…</p>}<div ref={chatEndRef} /></div><div className="border-t border-slate-100 p-4"><div className="mb-3 flex flex-wrap gap-2" aria-label="Suggested questions">{suggestionPills.map((suggestion) => <button key={suggestion} type="button" disabled={chatBusy} onClick={() => void sendMessage(suggestion)} className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-2 text-left text-xs font-semibold text-indigo-800 transition hover:border-indigo-400 hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed disabled:opacity-50">{suggestion}</button>)}</div><div className="flex gap-2"><input value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendMessage(); } }} aria-label="Message Shika" placeholder={listening ? "Listening… speak now" : "Ask Shika about your trip…"} className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" /><button type="button" onClick={toggleListening} aria-pressed={listening} aria-label={listening ? "Stop voice input" : "Speak to Shika"} className={`rounded-xl border px-4 text-lg ${listening ? "border-red-300 bg-red-50 text-red-700" : "border-slate-200 bg-white text-slate-700"}`}>{listening ? "■" : "🎙️"}</button><button type="button" disabled={!message.trim() || chatBusy} onClick={() => void sendMessage()} className="rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white disabled:bg-slate-200 disabled:text-slate-500">Send</button></div>{voiceError && <p role="alert" className="mt-2 text-xs text-amber-700">{voiceError}</p>}{chatError && <p role="alert" className="mt-2 text-xs text-red-700">{chatError}</p>}<p className="mt-2 text-xs text-slate-400">Tap the microphone to dictate a message, or choose a suggestion above. Shika’s replies are displayed as text.</p></div></section>}
     </Container>
       <button type="button" onClick={() => setTab("assistant")} aria-label="Open AI travel assistant Shika" title="Ask Shika" className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-indigo-300 bg-indigo-600 text-2xl text-white shadow-xl transition hover:scale-105 hover:bg-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-300 sm:bottom-7 sm:right-7" style={{ boxShadow: "0 10px 30px rgba(30, 41, 110, 0.35)" }}>✦</button>
   </main>;
