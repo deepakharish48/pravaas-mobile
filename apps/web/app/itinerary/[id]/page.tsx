@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import Button from "@/components/UI/Button";
@@ -35,6 +36,7 @@ function formatDate(value?: string | null) {
 
 export default function ItineraryAgentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const searchParams = useSearchParams();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,7 +65,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   useEffect(() => {
     let active = true;
     api(`/bookings/${id}`).then((data) => {
-      if (active) { setBooking(data); setDestination(data.destination ?? ""); setItinerary(data.itinerary ?? null); }
+      if (active) { setBooking(data); setDestination(searchParams.get("destination") ?? data.destination ?? ""); setItinerary(data.itinerary ?? null); }
     }).catch((err) => { if (active) setError(err?.message ?? "We couldn't load this booking."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; recognitionRef.current?.stop?.(); };
