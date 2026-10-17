@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import BrandLogo from "@/components/BrandLogo";
 import { useRouter } from "next/navigation";
 
 import Button from "@/components/UI/Button";
@@ -26,13 +26,7 @@ export default function HotelLoginPage() {
       <Container>
         <Card>
           <div className="mb-8 flex flex-col items-center">
-            <Image
-              src="/logo.png"
-              alt="Pravaas"
-              width={64}
-              height={64}
-              className="mb-4"
-            />
+            <BrandLogo size={64} className="mb-4" priority />
 
             <h1 className="text-3xl font-bold text-gray-900">
               Hotel Login
