@@ -19,16 +19,16 @@ const items = [
     icon: "🛂",
   },
   {
-    href: "/drive",
+    href: "/travel-history",
     title: "Drive Mode",
-    description: "Live route, GPS driving stats and nearby services",
+    description: "Open a trip to start driving navigation and find nearby services",
     icon: "🚗",
   },
 ];
 
 export default function MorePage() {
   const { flags } = useFeatureFlags();
-  const visibleItems = items.filter((item) => item.href !== "/drive" || flags.driveMode);
+  const visibleItems = items.filter((item) => item.title !== "Drive Mode" || flags.driveMode);
   return (
     <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">
       <GuestNavigation />
