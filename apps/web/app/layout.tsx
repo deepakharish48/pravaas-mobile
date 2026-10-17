@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   applicationName: "Pravaas",
   icons: {
-    icon: [{ url: "/icon", type: "image/png", sizes: "512x512" }],
-    shortcut: [{ url: "/icon", type: "image/png", sizes: "512x512" }],
-    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    shortcut: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/logo.png", type: "image/png" }],
   },
   appleWebApp: { capable: true, title: "Pravaas", statusBarStyle: "default" },
 };

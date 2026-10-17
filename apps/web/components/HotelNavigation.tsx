@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import { usePathname, useRouter } from "next/navigation";
 import { useHotelTheme } from "@/providers/HotelThemeProvider";
 
@@ -38,7 +38,7 @@ export default function HotelNavigation() {
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-slate-200 bg-white lg:flex lg:flex-col">
         <div className="flex min-h-20 items-center justify-between gap-2 border-b border-slate-200 px-4">
           <div className="flex min-w-0 items-center gap-3">
-            <Image src="/logo.png" alt="Pravaas" width={40} height={40} className="rounded-xl" />
+            <BrandLogo size={40} className="rounded-xl" />
             <div className="min-w-0">
               <p className="font-bold text-slate-950">Pravaas</p>
               <p className="text-xs text-slate-500">Hotel workspace</p>
@@ -67,7 +67,7 @@ export default function HotelNavigation() {
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur lg:hidden">
         <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-2">
           <div className="flex min-w-0 items-center gap-3">
-            <Image src="/logo.png" alt="Pravaas" width={36} height={36} className="rounded-lg" />
+            <BrandLogo size={36} className="rounded-lg" />
             <div className="min-w-0">
               <p className="truncate font-bold text-slate-950">Hotel workspace</p>
               <p className="text-xs text-slate-500">Reception operations</p>
