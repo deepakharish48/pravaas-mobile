@@ -1,0 +1,334 @@
+{
+  "version": "1.0.0",
+  "purpose": "Human-reviewable product acceptance evals for core Pravaas guest, hotel, and platform workflows. These are scenario definitions, not claims that automated end-to-end tests already exist.",
+  "evaluation_rules": {
+    "pass": "Expected behavior is observed in the target environment and evidence is recorded.",
+    "fail": "Behavior contradicts an expectation or causes data loss, unsafe access, or a broken primary flow.",
+    "blocked": "Cannot evaluate because required service, account, fixture, permission, or environment is unavailable.",
+    "evidence_required": [
+      "environment/build or commit SHA",
+      "steps performed",
+      "observed result",
+      "screenshot/log/test output where appropriate"
+    ]
+  },
+  "cases": [
+    {
+      "id": "BRAND-001",
+      "area": "branding",
+      "priority": "P1",
+      "surface": [
+        "homepage",
+        "navigation",
+        "login",
+        "signup",
+        "browser-tab",
+        "installed-pwa"
+      ],
+      "preconditions": [
+        "Approved canonical logo asset is available"
+      ],
+      "steps": [
+        "Open the homepage and auth pages",
+        "Inspect desktop and mobile navigation",
+        "Inspect browser favicon and Apple/PWA install icon",
+        "Install or refresh the PWA where supported"
+      ],
+      "expected": [
+        "All surfaces use the approved Pravaas logo and consistent brand treatment",
+        "Icons are legible at small sizes and have no unrelated generated mark",
+        "No broken image requests or stale cached icon remains after version/cache refresh"
+      ],
+      "automation": "visual/browser test candidate"
+    },
+    {
+      "id": "AUTH-001",
+      "area": "authentication",
+      "priority": "P1",
+      "surface": [
+        "web"
+      ],
+      "preconditions": [
+        "Test user exists"
+      ],
+      "steps": [
+        "Sign in with valid credentials",
+        "Sign out",
+        "Attempt sign-in with invalid credentials"
+      ],
+      "expected": [
+        "Valid sign-in reaches the correct authenticated experience",
+        "Sign-out clears the authenticated session",
+        "Invalid credentials show a useful error and do not authenticate"
+      ],
+      "automation": "API/integration + browser test candidate"
+    },
+    {
+      "id": "AUTH-002",
+      "area": "authorization",
+      "priority": "P0",
+      "surface": [
+        "guest",
+        "hotel",
+        "admin"
+      ],
+      "preconditions": [
+        "Test identities for each role exist"
+      ],
+      "steps": [
+        "Sign in as each role",
+        "Attempt to open a route and call an API outside that role's permissions"
+      ],
+      "expected": [
+        "Only permitted routes and actions are available",
+        "Server-side authorization rejects unauthorized API access regardless of UI visibility"
+      ],
+      "automation": "API integration test candidate"
+    },
+    {
+      "id": "HOTEL-001",
+      "area": "hotel onboarding/KYG",
+      "priority": "P1",
+      "surface": [
+        "hotel"
+      ],
+      "preconditions": [
+        "Hotel test account and required KYG/C-form fixtures are available"
+      ],
+      "steps": [
+        "Open hotel onboarding/KYG workflow",
+        "Submit valid required details",
+        "Try submitting with required fields missing",
+        "Reopen the saved record"
+      ],
+      "expected": [
+        "Valid data is saved and visible after reopening",
+        "Missing required data is clearly identified",
+        "Sensitive guest/hotel data is not exposed to unrelated accounts"
+      ],
+      "automation": "API integration + browser test candidate"
+    },
+    {
+      "id": "CFORM-001",
+      "area": "C-form",
+      "priority": "P0",
+      "surface": [
+        "hotel"
+      ],
+      "preconditions": [
+        "Authorized hotel account and synthetic guest data"
+      ],
+      "steps": [
+        "Create or open a guest C-form record",
+        "Submit valid details",
+        "Try invalid/incomplete details",
+        "Verify record access with an unrelated account"
+      ],
+      "expected": [
+        "Valid records persist with correct status",
+        "Validation prevents malformed submissions",
+        "Access is restricted to authorized users; errors do not leak sensitive data"
+      ],
+      "automation": "API integration test candidate"
+    },
+    {
+      "id": "BOOKING-001",
+      "area": "booking",
+      "priority": "P1",
+      "surface": [
+        "guest",
+        "hotel"
+      ],
+      "preconditions": [
+        "Test property/booking fixtures exist"
+      ],
+      "steps": [
+        "Complete the supported booking flow",
+        "Inspect booking in guest history and hotel view",
+        "Refresh and reopen both views"
+      ],
+      "expected": [
+        "Booking details and status remain consistent across views",
+        "Refresh does not duplicate a booking",
+        "Status labels are readable and consistent"
+      ],
+      "automation": "API integration + browser test candidate"
+    },
+    {
+      "id": "HISTORY-001",
+      "area": "travel history",
+      "priority": "P2",
+      "surface": [
+        "guest"
+      ],
+      "preconditions": [
+        "At least three dated synthetic trips exist"
+      ],
+      "steps": [
+        "Open travel history",
+        "Compare records with their timestamps"
+      ],
+      "expected": [
+        "Records are sorted newest to oldest",
+        "Missing dates do not crash the screen",
+        "Status labels remain legible in light and dark themes if supported"
+      ],
+      "automation": "unit/component test candidate"
+    },
+    {
+      "id": "SAVED-001",
+      "area": "saved itineraries",
+      "priority": "P1",
+      "surface": [
+        "guest"
+      ],
+      "preconditions": [
+        "A saved itinerary exists"
+      ],
+      "steps": [
+        "Save an itinerary",
+        "Navigate away and return",
+        "Open the saved itinerary"
+      ],
+      "expected": [
+        "Saved itinerary is discoverable from a clear entry point",
+        "Saved content persists across navigation/reload according to product design",
+        "Opening it restores the expected itinerary details"
+      ],
+      "automation": "API/browser test candidate"
+    },
+    {
+      "id": "EXPLORE-001",
+      "area": "Explore",
+      "priority": "P2",
+      "surface": [
+        "guest"
+      ],
+      "preconditions": [
+        "Explore data or fallback state is available"
+      ],
+      "steps": [
+        "Open Explore",
+        "Open a card",
+        "Use its primary action",
+        "Repeat with empty/error data if available"
+      ],
+      "expected": [
+        "Cards expose the intended action and respond to taps/clicks",
+        "Empty and error states are understandable",
+        "Layout remains usable on narrow screens"
+      ],
+      "automation": "component/browser test candidate"
+    },
+    {
+      "id": "SHIKA-001",
+      "area": "AI suggestions",
+      "priority": "P1",
+      "surface": [
+        "guest"
+      ],
+      "preconditions": [
+        "AI service configured or deterministic mock available"
+      ],
+      "steps": [
+        "Ask for a travel suggestion",
+        "Submit an unrelated or empty prompt",
+        "Simulate AI service failure"
+      ],
+      "expected": [
+        "Response matches the user's intent and avoids presenting guesses as verified facts",
+        "Empty input is handled safely",
+        "Service failure produces a recoverable message"
+      ],
+      "automation": "mocked integration + curated eval candidate"
+    },
+    {
+      "id": "DRIVE-001",
+      "area": "Drive mode",
+      "priority": "P1",
+      "surface": [
+        "guest"
+      ],
+      "preconditions": [
+        "Drive mode feature flag enabled and test location/route available"
+      ],
+      "steps": [
+        "Open Drive mode",
+        "Start a supported route/action",
+        "Repeat with feature flag disabled",
+        "Deny location permission if requested"
+      ],
+      "expected": [
+        "Enabled mode is reachable and core controls work",
+        "Disabled mode is hidden or gracefully unavailable",
+        "Permission denial does not crash the app and explains the limitation"
+      ],
+      "automation": "browser/device test candidate"
+    },
+    {
+      "id": "FLAGS-001",
+      "area": "feature flags",
+      "priority": "P1",
+      "surface": [
+        "web",
+        "api"
+      ],
+      "preconditions": [
+        "Flags FEATURE_EXPLORE_ENABLED, FEATURE_REEL_TO_ITINERARY_ENABLED, FEATURE_COMMUNITY_ENABLED and Drive mode flag configured"
+      ],
+      "steps": [
+        "Test each flag enabled",
+        "Test each flag disabled",
+        "Test unset or malformed flag value"
+      ],
+      "expected": [
+        "Enabled features appear and work",
+        "Disabled features are gated without breaking navigation",
+        "Defaults are safe and consistent with the documented product decision"
+      ],
+      "automation": "unit/integration test candidate"
+    },
+    {
+      "id": "RESP-001",
+      "area": "responsive UI",
+      "priority": "P2",
+      "surface": [
+        "web"
+      ],
+      "preconditions": [
+        "Representative pages are available"
+      ],
+      "steps": [
+        "Check homepage, auth, booking, history and hotel screens at mobile and desktop widths"
+      ],
+      "expected": [
+        "No horizontal overflow, clipped primary actions, or overlapping dialogs",
+        "Keyboard focus and labels remain usable",
+        "Loading, empty, error, and success states are distinguishable"
+      ],
+      "automation": "Playwright visual/browser test candidate"
+    },
+    {
+      "id": "REG-001",
+      "area": "regression",
+      "priority": "P0",
+      "surface": [
+        "web",
+        "api",
+        "mobile"
+      ],
+      "preconditions": [
+        "CI dependencies installed"
+      ],
+      "steps": [
+        "Run configured lint/typecheck/build checks on the PR"
+      ],
+      "expected": [
+        "All configured required checks pass",
+        "Failures identify the command and relevant logs",
+        "No check is reported as passing if it was skipped or could not run"
+      ],
+      "automation": "GitHub Actions"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+name: Pravaas PR Review Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web lint and production build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint web
+        run: pnpm --filter web lint
+      - name: Build web
+        run: pnpm --filter web build
+
+  api:
+    name: API typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck API
+        run: pnpm --filter @pravaas/api lint
+
+  mobile:
+    name: Mobile typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck mobile
+        run: pnpm --filter @pravaas/mobile lint
+
+  eval-set:
+    name: Validate product eval set
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate eval set structure
+        run: |
+          node -e "const e=require('./docs/quality/pravaas-eval-set.json'); if(!e.version || !Array.isArray(e.cases) || e.cases.length < 1) process.exit(1); const ids=e.cases.map(x=>x.id); if(new Set(ids).size!==ids.length) throw new Error('Duplicate eval IDs'); for (const c of e.cases) { if(!c.id || !c.area || !c.priority || !Array.isArray(c.steps) || !Array.isArray(c.expected)) throw new Error('Invalid eval case: '+JSON.stringify(c)); } console.log('Validated '+e.cases.length+' eval cases');"
