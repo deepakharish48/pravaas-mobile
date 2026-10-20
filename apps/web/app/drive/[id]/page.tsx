@@ -102,7 +102,7 @@ export default function DriveModePage({ params }: { params: Promise<{ id: string
         setBooking(data);
         setPageError("");
       })
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         if (active) setPageError((error instanceof Error ? error.message : undefined) ?? "We couldn't load this trip.");
       })
       .finally(() => {
