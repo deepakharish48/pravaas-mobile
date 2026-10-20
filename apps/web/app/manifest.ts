@@ -1,27 +1,20 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Pravaas",
     short_name: "Pravaas",
-
     description: "Smart Digital Travel Companion",
-
     start_url: "/",
-
     display: "standalone",
-
     orientation: "portrait",
-
     background_color: "#ffffff",
-
-    theme_color: "#1D4ED8",
-
+    theme_color: "#101a30",
     icons: [
       {
-        src: "/logo.png",
+        src: "/icon.svg",
         sizes: "any",
-        type: "image/png",
+        type: "image/svg+xml",
         purpose: "any",
       },
     ],
