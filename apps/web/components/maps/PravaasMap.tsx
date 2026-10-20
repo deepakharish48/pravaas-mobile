@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    google?: any;
+    google?: typeof google;
   }
 }
 
@@ -31,7 +31,7 @@ type PravaasMapProps = {
 
 const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 };
 
-let googleMapsLoader: Promise<any> | null = null;
+let googleMapsLoader: Promise<typeof google> | null = null;
 
 function loadGoogleMaps() {
   if (typeof window === "undefined") return Promise.reject(new Error("Google Maps is only available in the browser."));
@@ -79,12 +79,12 @@ function decodePolyline(encoded: string) {
 
 export default function PravaasMap({ destination, places = [], route = null, currentLocation = null, className = "" }: PravaasMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const markerRef = useRef<any>(null);
-  const placeMarkersRef = useRef<any[]>([]);
-  const routePolylineRef = useRef<any>(null);
-  const routeMarkersRef = useRef<any[]>([]);
-  const currentMarkerRef = useRef<any>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const placeMarkersRef = useRef<google.maps.Marker[]>([]);
+  const routePolylineRef = useRef<google.maps.Polyline | null>(null);
+  const routeMarkersRef = useRef<google.maps.Marker[]>([]);
+  const currentMarkerRef = useRef<google.maps.Marker | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [statusMessage, setStatusMessage] = useState("Loading map…");
 
@@ -168,7 +168,7 @@ export default function PravaasMap({ destination, places = [], route = null, cur
         }
 
         if (currentLocation) {
-          currentMarkerRef.current = new google.maps.Marker({
+          currentMarkerRef.current = new googleApi.maps.Marker({
             map: mapRef.current,
             position: currentLocation,
             title: "Your current location",
@@ -234,8 +234,8 @@ export default function PravaasMap({ destination, places = [], route = null, cur
     void updateMap();
     return () => { cancelled = true; };
   }, [destination, places, route, currentLocation, status]);
-  async function geocodeDestination(google: any, map: any, query: string) {
-    const geocoder = new google.maps.Geocoder();
+  async function geocodeDestination(googleApi: typeof google, map: google.maps.Map, query: string) {
+    const geocoder = new googleApi.maps.Geocoder();
     const result = await geocoder.geocode({ address: query });
     const location = result.results?.[0]?.geometry?.location;
 
@@ -249,7 +249,7 @@ export default function PravaasMap({ destination, places = [], route = null, cur
       map,
       position: location,
       title: query,
-      animation: google.maps.Animation.DROP,
+      animation: googleApi.maps.Animation.DROP,
     });
   }
 
