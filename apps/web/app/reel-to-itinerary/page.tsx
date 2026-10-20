@@ -65,8 +65,8 @@ function ReelForm() {
       if (!result?.analysis) throw new Error("No visual analysis was returned.");
       appendSource("AI analysis of sampled video frames (verify suggested locations)", result.analysis);
       setMediaStatus("Visual analysis added to your inspiration notes. Place names may need verification.");
-    } catch (err: any) {
-      setMediaStatus(err?.message ?? "Could not analyze this video.");
+    } catch (err: unknown) {
+      setMediaStatus((err instanceof Error ? err.message : undefined) ?? "Could not analyze this video.");
     } finally {
       URL.revokeObjectURL(objectUrl);
       setMediaBusy(false);
@@ -86,8 +86,8 @@ function ReelForm() {
       if (!result?.transcript) throw new Error("No transcript was returned.");
       appendSource("AI transcript of user-provided audio", result.transcript);
       setMediaStatus("Transcript added to your inspiration notes.");
-    } catch (err: any) {
-      setMediaStatus(err?.message ?? "Could not transcribe this audio.");
+    } catch (err: unknown) {
+      setMediaStatus((err instanceof Error ? err.message : undefined) ?? "Could not transcribe this audio.");
     } finally { setMediaBusy(false); }
   }
   async function generate() {
@@ -101,7 +101,7 @@ function ReelForm() {
       const result = await api(`/bookings/${bookingId}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: interests.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 8), sourceContext: `Instagram inspiration URL: ${url.trim()}\nTraveller-provided Reel caption/transcript/notes:\n${sourceText.trim()}` }) });
       if (!result?.destination) throw new Error("The itinerary service returned an unexpected response.");
       router.push(`/itinerary/${bookingId}`);
-    } catch (err: any) { setError(err?.message ?? "Could not generate an itinerary. Please try again."); }
+    } catch (err: unknown) { setError((err instanceof Error ? err.message : undefined) ?? "Could not generate an itinerary. Please try again."); }
     finally { setBusy(false); }
   }
   if (!loaded) return <main className="min-h-screen bg-[#f6f8fc] p-8 text-slate-600">Loading…</main>;
