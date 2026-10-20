@@ -32,7 +32,7 @@ export default function TravellerInfoPage() {
   useEffect(() => {
     api("/bookings/traveller-info")
       .then((data) => setInfo(data))
-      .catch((err: any) => setError((err instanceof Error ? err.message : undefined) ?? "Could not load traveller information."))
+      .catch((err: unknown) => setError((err instanceof Error ? err.message : undefined) ?? "Could not load traveller information."))
       .finally(() => setLoading(false));
   }, []);
 
