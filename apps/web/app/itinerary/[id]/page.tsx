@@ -66,7 +66,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     let active = true;
     api(`/bookings/${id}`).then((data) => {
       if (active) { setBooking(data); setDestination(searchParams.get("destination") ?? data.destination ?? ""); setItinerary(data.itinerary ?? null); }
-    }).catch((err) => { if (active) setError(err?.message ?? "We couldn't load this booking."); })
+    }).catch((err) => { if (active) setError((err instanceof Error ? err.message : undefined) ?? "We couldn't load this booking."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; recognitionRef.current?.stop?.(); };
   }, [id]);
@@ -100,7 +100,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: selectedCategories }) });
       setItinerary(result); setDestination(result.destination); setTab("itinerary"); setSaveMessage("Your new itinerary is saved.");
-    } catch (err: any) { setGenerationError(err?.message ?? "We couldn’t generate your itinerary. Please try again."); }
+    } catch (err: unknown) { setGenerationError((err instanceof Error ? err.message : undefined) ?? "We couldn’t generate your itinerary. Please try again."); }
     finally { setGenerating(false); }
   }
 
@@ -110,7 +110,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const saved = await api(`/bookings/${id}/itinerary/save`, { method: "POST", body: JSON.stringify({ itinerary }) });
       setItinerary(saved); setDestination(saved.destination); setSaveMessage("Your changes are saved.");
-    } catch (err: any) { setSaveMessage(err?.message ?? "Could not save your changes."); }
+    } catch (err: unknown) { setSaveMessage((err instanceof Error ? err.message : undefined) ?? "Could not save your changes."); }
     finally { setSaving(false); }
   }
 
@@ -148,7 +148,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
       const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(0, -1).slice(-10) }) });
       setChat((current) => [...current, { role: "assistant", content: result.reply }]);
       setAiSuggestions(Array.isArray(result.suggestions) ? result.suggestions.filter((item: unknown): item is string => typeof item === "string" && item.trim().length > 0).slice(0, 3) : null);
-    } catch (err: any) { setChatError(err?.message ?? "Shika is having trouble responding. Please try again."); }
+    } catch (err: unknown) { setChatError((err instanceof Error ? err.message : undefined) ?? "Shika is having trouble responding. Please try again."); }
     finally { setChatBusy(false); }
   }
 
@@ -180,7 +180,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/recommendations`, { method: "POST", body: JSON.stringify({ query, destination: destination.trim() }) });
       setPlaces(result);
-    } catch (err: any) { setPlacesError(err?.message ?? "Could not load live recommendations."); setPlaces([]); }
+    } catch (err: unknown) { setPlacesError((err instanceof Error ? err.message : undefined) ?? "Could not load live recommendations."); setPlaces([]); }
     finally { setPlacesBusy(false); }
   }
 
