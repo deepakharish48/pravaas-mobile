@@ -6,16 +6,17 @@ type BrandLogoProps = {
   priority?: boolean;
 };
 
-/** Shared Pravaas brand mark. Keep all product surfaces on the canonical /logo.png asset. */
+/** Canonical Pravaas wordmark. Keep shared navigation branding aligned with the brand asset. */
 export default function BrandLogo({ size = 40, className = "", priority = false }: BrandLogoProps) {
   return (
     <Image
-      src="/logo.png"
+      src="/brand-wordmark.svg"
       alt="Pravaas"
-      width={size}
+      width={size * 4.6}
       height={size}
       className={className}
       priority={priority}
+      unoptimized
     />
   );
 }
