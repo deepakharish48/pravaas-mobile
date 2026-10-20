@@ -245,7 +245,7 @@ export default function PravaasMap({ destination, places = [], route = null, cur
     map.setZoom(12);
 
     if (markerRef.current) markerRef.current.setMap(null);
-    markerRef.current = new google.maps.Marker({
+    markerRef.current = new googleApi.maps.Marker({
       map,
       position: location,
       title: query,
