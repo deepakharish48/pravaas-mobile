@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   applicationName: "Pravaas",
   icons: {
-    icon: [{ url: "/logo.png", type: "image/png" }],
-    shortcut: [{ url: "/logo.png", type: "image/png" }],
-    apple: [{ url: "/logo.png", type: "image/png" }],
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
   },
   appleWebApp: { capable: true, title: "Pravaas", statusBarStyle: "default" },
 };
 
-export const viewport: Viewport = { themeColor: "#080F20" };
+export const viewport: Viewport = { themeColor: "#101a30" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
