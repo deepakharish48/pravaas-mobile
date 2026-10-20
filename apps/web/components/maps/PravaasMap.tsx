@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type GoogleMapsApi = typeof google;
+
 declare global {
   interface Window {
-    google?: typeof google;
+    google?: GoogleMapsApi;
   }
 }
 
@@ -31,7 +33,7 @@ type PravaasMapProps = {
 
 const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 };
 
-let googleMapsLoader: Promise<typeof google> | null = null;
+let googleMapsLoader: Promise<GoogleMapsApi> | null = null;
 
 function loadGoogleMaps() {
   if (typeof window === "undefined") return Promise.reject(new Error("Google Maps is only available in the browser."));
