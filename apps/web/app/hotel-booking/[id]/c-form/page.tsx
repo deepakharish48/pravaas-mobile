@@ -66,7 +66,7 @@ function Preview({ data }: { data: CFormData }) {
 
 export default function CFormPage() {
   const params = useParams();
-  const router = useRouter();
+  
   const id = String(params.id);
   const [data, setData] = useState<CFormData | null>(null);
   const [saved, setSaved] = useState(false);
