@@ -112,10 +112,10 @@ export default function PravaasMap({ destination, places = [], route = null, cur
         if (destination?.trim()) {
           await geocodeDestination(google, map, destination);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (!cancelled) {
           setStatus("error");
-          setStatusMessage(error?.message ?? "Google Maps could not be loaded.");
+          setStatusMessage((error instanceof Error ? error.message : undefined) ?? "Google Maps could not be loaded.");
         }
       }
     }
