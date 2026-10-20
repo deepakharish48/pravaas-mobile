@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type GoogleMapsApi = typeof google;
+type GoogleMapsApi = { maps: any };
 
 declare global {
   interface Window {
@@ -35,7 +35,7 @@ const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 };
 
 let googleMapsLoader: Promise<GoogleMapsApi> | null = null;
 
-function loadGoogleMaps() {
+function loadGoogleMaps(): Promise<GoogleMapsApi> {
   if (typeof window === "undefined") return Promise.reject(new Error("Google Maps is only available in the browser."));
   if (window.google?.maps) return Promise.resolve(window.google);
   if (googleMapsLoader) return googleMapsLoader;
@@ -46,7 +46,7 @@ function loadGoogleMaps() {
   googleMapsLoader = new Promise((resolve, reject) => {
     const existing = document.querySelector('script[data-pravaas-google-maps="true"]');
     if (existing) {
-      existing.addEventListener("load", () => resolve(window.google));
+      existing.addEventListener("load", () => window.google ? resolve(window.google) : reject(new Error("Google Maps could not be loaded.")));
       existing.addEventListener("error", () => reject(new Error("Google Maps could not be loaded.")));
       return;
     }
@@ -56,7 +56,7 @@ function loadGoogleMaps() {
     script.async = true;
     script.defer = true;
     script.dataset.pravaasGoogleMaps = "true";
-    script.onload = () => resolve(window.google);
+    script.onload = () => window.google ? resolve(window.google) : reject(new Error("Google Maps could not be loaded."));
     script.onerror = () => reject(new Error("Google Maps could not be loaded."));
     document.head.appendChild(script);
   });
@@ -81,16 +81,16 @@ function decodePolyline(encoded: string) {
 
 export default function PravaasMap({ destination, places = [], route = null, currentLocation = null, className = "" }: PravaasMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
-  const placeMarkersRef = useRef<google.maps.Marker[]>([]);
-  const routePolylineRef = useRef<google.maps.Polyline | null>(null);
-  const routeMarkersRef = useRef<google.maps.Marker[]>([]);
-  const currentMarkerRef = useRef<google.maps.Marker | null>(null);
+  const mapRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const placeMarkersRef = useRef<any[]>([]);
+  const routePolylineRef = useRef<any>(null);
+  const routeMarkersRef = useRef<any[]>([]);
+  const currentMarkerRef = useRef<any>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [statusMessage, setStatusMessage] = useState("Loading map…");
 
-  async function geocodeDestination(googleApi: typeof google, map: google.maps.Map, query: string) {
+  async function geocodeDestination(googleApi: GoogleMapsApi, map: any, query: string) {
     const geocoder = new googleApi.maps.Geocoder();
     const result = await geocoder.geocode({ address: query });
     const location = result.results?.[0]?.geometry?.location;
@@ -255,7 +255,6 @@ export default function PravaasMap({ destination, places = [], route = null, cur
     void updateMap();
     return () => { cancelled = true; };
   }, [destination, places, route, currentLocation, status]);
-
 
   return (
     <div className={`relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 ${className}`}>
