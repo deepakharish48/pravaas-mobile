@@ -6,7 +6,7 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
-    "lint": "tsc --noEmit",
+    "lint": "pnpm --filter @pravaas/types build && tsc --noEmit",
     "predev": "prisma generate",
     "prebuild": "prisma generate",
     "db:generate": "prisma generate",
