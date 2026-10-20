@@ -20,7 +20,11 @@ function systemTheme(): "light" | "dark" {
 }
 
 export function HotelThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<HotelTheme>("system");
+  const [theme, setThemeState] = useState<HotelTheme>("system");
+  const setTheme = (nextTheme: HotelTheme) => {
+    setThemeState(nextTheme);
+    setResolvedTheme(nextTheme === "system" ? systemTheme() : nextTheme);
+  };
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
   const [ready, setReady] = useState(false);
 
@@ -28,7 +32,7 @@ export function HotelThemeProvider({ children }: { children: ReactNode }) {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const initial: HotelTheme = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
     queueMicrotask(() => {
-      setTheme(initial);
+      setThemeState(initial);
       setResolvedTheme(initial === "system" ? systemTheme() : initial);
       setReady(true);
     });
@@ -39,7 +43,6 @@ export function HotelThemeProvider({ children }: { children: ReactNode }) {
     const resolved = theme === "system" ? systemTheme() : theme;
     document.documentElement.dataset.hotelTheme = resolved;
     window.localStorage.setItem(STORAGE_KEY, theme);
-    setResolvedTheme(resolved);
   }, [theme, ready]);
 
   useEffect(() => {
