@@ -24,10 +24,10 @@ export default function IdentityPage() {
 
   async function loadDocuments() {
     try { setDocuments(await api("/identity")); setError(""); }
-    catch (err: any) { setError(err?.message ?? "Could not load your wallet."); }
+    catch (err: unknown) { setError((err instanceof Error ? err.message : undefined) ?? "Could not load your wallet."); }
     finally { setLoading(false); }
   }
-  useEffect(() => { void loadDocuments(); }, []);
+  useEffect(() => { const task = Promise.resolve().then(loadDocuments); return () => { void task; }; }, []);
   const find = (type: string) => documents.find((doc) => doc.documentType === type);
 
   return <main className="min-h-screen bg-[#f6f8fc] pb-24 md:pb-8">

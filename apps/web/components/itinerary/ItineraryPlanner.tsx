@@ -62,9 +62,9 @@ export default function ItineraryPlanner(props: Props) {
     try {
       const result = await api("/bookings/" + id + "/itinerary/route", { method: "POST", body: JSON.stringify({ dayIndex }) });
       setRoute(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setRoute(null);
-      setRouteError(error?.message || "Could not build this route.");
+      setRouteError((error instanceof Error ? error.message : undefined) || "Could not build this route.");
     } finally {
       setRouteBusy(false);
     }

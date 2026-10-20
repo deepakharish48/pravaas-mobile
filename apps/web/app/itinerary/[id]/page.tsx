@@ -18,6 +18,29 @@ type Tab = "discover" | "itinerary" | "saved" | "assistant";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type Place = { id: string; name: string; address: string; rating: number | null; category: string; url: string | null; location?: { lat: number; lng: number } | null };
 
+type SpeechRecognitionAlternativeLike = { transcript: string };
+type SpeechRecognitionResultLike = ArrayLike<SpeechRecognitionAlternativeLike> & { isFinal: boolean };
+type SpeechRecognitionEventLike = { resultIndex: number; results: ArrayLike<SpeechRecognitionResultLike> };
+type SpeechRecognitionErrorLike = { error: string };
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 const categories = [
   { name: "Sightseeing", icon: "🏛️", description: "Landmarks and local highlights" },
   { name: "Food & cafés", icon: "🍽️", description: "Local favourites and cafés" },
@@ -59,14 +82,14 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   const [places, setPlaces] = useState<Place[]>([]);
   const [placesBusy, setPlacesBusy] = useState(false);
   const [placesError, setPlacesError] = useState("");
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let active = true;
     api(`/bookings/${id}`).then((data) => {
       if (active) { setBooking(data); setDestination(searchParams.get("destination") ?? data.destination ?? ""); setItinerary(data.itinerary ?? null); }
-    }).catch((err) => { if (active) setError(err?.message ?? "We couldn't load this booking."); })
+    }).catch((err) => { if (active) setError((err instanceof Error ? err.message : undefined) ?? "We couldn't load this booking."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; recognitionRef.current?.stop?.(); };
   }, [id]);
@@ -100,7 +123,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/itinerary`, { method: "POST", body: JSON.stringify({ destination: destination.trim(), interests: selectedCategories }) });
       setItinerary(result); setDestination(result.destination); setTab("itinerary"); setSaveMessage("Your new itinerary is saved.");
-    } catch (err: any) { setGenerationError(err?.message ?? "We couldn’t generate your itinerary. Please try again."); }
+    } catch (err: unknown) { setGenerationError((err instanceof Error ? err.message : undefined) ?? "We couldn’t generate your itinerary. Please try again."); }
     finally { setGenerating(false); }
   }
 
@@ -110,7 +133,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const saved = await api(`/bookings/${id}/itinerary/save`, { method: "POST", body: JSON.stringify({ itinerary }) });
       setItinerary(saved); setDestination(saved.destination); setSaveMessage("Your changes are saved.");
-    } catch (err: any) { setSaveMessage(err?.message ?? "Could not save your changes."); }
+    } catch (err: unknown) { setSaveMessage((err instanceof Error ? err.message : undefined) ?? "Could not save your changes."); }
     finally { setSaving(false); }
   }
 
@@ -148,7 +171,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
       const result = await api(`/bookings/${id}/assistant`, { method: "POST", body: JSON.stringify({ message: clean, history: next.slice(0, -1).slice(-10) }) });
       setChat((current) => [...current, { role: "assistant", content: result.reply }]);
       setAiSuggestions(Array.isArray(result.suggestions) ? result.suggestions.filter((item: unknown): item is string => typeof item === "string" && item.trim().length > 0).slice(0, 3) : null);
-    } catch (err: any) { setChatError(err?.message ?? "Shika is having trouble responding. Please try again."); }
+    } catch (err: unknown) { setChatError((err instanceof Error ? err.message : undefined) ?? "Shika is having trouble responding. Please try again."); }
     finally { setChatBusy(false); }
   }
 
@@ -156,12 +179,12 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   function toggleListening() {
     setVoiceError("");
     if (listening) { recognitionRef.current?.stop?.(); setListening(false); return; }
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!SpeechRecognition) { setVoiceError("Voice input isn’t supported in this browser. You can still type to Shika."); return; }
     const recognition = new SpeechRecognition();
     recognition.lang = "en-IN"; recognition.interimResults = true; recognition.continuous = false;
     let finalTranscript = "";
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
       let interim = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
@@ -169,7 +192,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
       }
       setMessage((finalTranscript + interim).trim());
     };
-    recognition.onerror = (event: any) => { setVoiceError(event.error === "not-allowed" ? "Please allow microphone access to speak with Shika." : "I couldn’t hear that clearly. Please try again."); setListening(false); };
+    recognition.onerror = (event: SpeechRecognitionErrorLike) => { setVoiceError(event.error === "not-allowed" ? "Please allow microphone access to speak with Shika." : "I couldn’t hear that clearly. Please try again."); setListening(false); };
     recognition.onend = () => { setListening(false); if (finalTranscript.trim()) void sendMessage(finalTranscript.trim()); };
     recognitionRef.current = recognition; recognition.start(); setListening(true);
   }
@@ -180,7 +203,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
     try {
       const result = await api(`/bookings/${id}/recommendations`, { method: "POST", body: JSON.stringify({ query, destination: destination.trim() }) });
       setPlaces(result);
-    } catch (err: any) { setPlacesError(err?.message ?? "Could not load live recommendations."); setPlaces([]); }
+    } catch (err: unknown) { setPlacesError((err instanceof Error ? err.message : undefined) ?? "Could not load live recommendations."); setPlaces([]); }
     finally { setPlacesBusy(false); }
   }
 

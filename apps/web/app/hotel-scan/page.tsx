@@ -16,13 +16,13 @@ export default function HotelScanPage() {
 
   useEffect(() => {
     const codeReader = new BrowserQRCodeReader();
-    let controls: any;
+    let controls: { stop: () => void; dispose?: () => void } | undefined;
     async function startScanner() {
       try {
         const devices = await BrowserQRCodeReader.listVideoInputDevices();
         if (!devices.length) { alert("No camera found."); return; }
         const isMobile = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-        const handleResult = (result: any) => { if (!result) return; controls?.stop(); router.push(`/hotel-checkin?payload=${encodeURIComponent(result.getText())}`); };
+        const handleResult = (result: { getText: () => string } | undefined) => { if (!result) return; controls?.stop(); router.push(`/hotel-checkin?payload=${encodeURIComponent(result.getText())}`); };
         if (isMobile) {
           try {
             controls = await codeReader.decodeFromConstraints({ video: { facingMode: { exact: "environment" } }, audio: false }, videoRef.current!, handleResult);

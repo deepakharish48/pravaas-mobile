@@ -102,8 +102,8 @@ export default function DriveModePage({ params }: { params: Promise<{ id: string
         setBooking(data);
         setPageError("");
       })
-      .catch((error: any) => {
-        if (active) setPageError(error?.message ?? "We couldn't load this trip.");
+      .catch((error: unknown) => {
+        if (active) setPageError((error instanceof Error ? error.message : undefined) ?? "We couldn't load this trip.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -162,8 +162,8 @@ export default function DriveModePage({ params }: { params: Promise<{ id: string
       setRoute(result);
       destinationLocationRef.current = result.destination.location;
       lastRouteRef.current = { point, timestamp: now };
-    } catch (error: any) {
-      setRouteError(error?.message ?? "The driving route could not be updated.");
+    } catch (error: unknown) {
+      setRouteError((error instanceof Error ? error.message : undefined) ?? "The driving route could not be updated.");
     } finally {
       routeRequestRef.current = false;
       setRouteBusy(false);
@@ -268,8 +268,8 @@ export default function DriveModePage({ params }: { params: Promise<{ id: string
         body: JSON.stringify({ ...currentLocation, category }),
       });
       setNearbyPlaces(result);
-    } catch (error: any) {
-      setNearbyError(error?.message ?? "Nearby places could not be loaded.");
+    } catch (error: unknown) {
+      setNearbyError((error instanceof Error ? error.message : undefined) ?? "Nearby places could not be loaded.");
       setNearbyPlaces([]);
     } finally {
       setNearbyBusy(false);

@@ -42,8 +42,8 @@ export default function IdentityCard({ title, type, doc, onUploaded, custom = fa
       setFile(null);
       if (inputRef.current) inputRef.current.value = "";
       onUploaded();
-    } catch (err: any) {
-      setError(err?.message ?? "Upload failed. Please try again.");
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : undefined) ?? "Upload failed. Please try again.");
     } finally { setLoading(false); }
   }
 
