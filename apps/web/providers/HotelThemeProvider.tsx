@@ -27,17 +27,19 @@ export function HotelThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const initial: HotelTheme = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
-    setTheme(initial);
-    setResolvedTheme(initial === "system" ? systemTheme() : initial);
-    setReady(true);
+    queueMicrotask(() => {
+      setTheme(initial);
+      setResolvedTheme(initial === "system" ? systemTheme() : initial);
+      setReady(true);
+    });
   }, []);
 
   useEffect(() => {
     if (!ready) return;
     const resolved = theme === "system" ? systemTheme() : theme;
-    setResolvedTheme(resolved);
     document.documentElement.dataset.hotelTheme = resolved;
     window.localStorage.setItem(STORAGE_KEY, theme);
+    setResolvedTheme(resolved);
   }, [theme, ready]);
 
   useEffect(() => {
