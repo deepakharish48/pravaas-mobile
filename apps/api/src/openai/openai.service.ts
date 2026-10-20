@@ -69,7 +69,7 @@ function isShikaTravelRelated(
       || Boolean(context.destination && prior.includes(context.destination.toLowerCase()));
   });
 
-  return hasTravelContext && text.length <= 180 && text.includes("?");
+  return hasTravelContext && text.length <= 180 && (text.includes("?") || /^(tell me more|where is|where can i|explain|describe|what about|what does|who is|how do i)\\b/.test(text));
 }
 
 @Injectable()
