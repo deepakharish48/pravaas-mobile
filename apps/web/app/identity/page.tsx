@@ -24,7 +24,7 @@ export default function IdentityPage() {
 
   async function loadDocuments() {
     try { setDocuments(await api("/identity")); setError(""); }
-    catch (err: any) { setError(err?.message ?? "Could not load your wallet."); }
+    catch (err: unknown) { setError((err instanceof Error ? err.message : undefined) ?? "Could not load your wallet."); }
     finally { setLoading(false); }
   }
   useEffect(() => { void loadDocuments(); }, []);
