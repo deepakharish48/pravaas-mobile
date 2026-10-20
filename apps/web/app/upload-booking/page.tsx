@@ -61,9 +61,9 @@ export default function UploadBookingPage() {
         body: formData,
       });
       router.push(`/qr/${booking.id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.message ?? "Booking upload failed. Please try again.");
+      setError((err instanceof Error ? err.message : undefined) ?? "Booking upload failed. Please try again.");
     } finally {
       setLoading(false);
     }
