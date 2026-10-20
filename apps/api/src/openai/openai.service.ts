@@ -39,10 +39,11 @@ const SHIKA_TRAVEL_KEYWORDS = [
 function isShikaTravelRelated(
   message: string,
   context: { destination?: string | null; hotelName?: string | null },
+  history: Array<{ role: string; content: string }> = [],
 ) {
   const text = message.toLowerCase().trim();
 
-  if (/^(hi|hello|hey|thanks|thank you|good morning|good afternoon|good evening)\b/.test(text)) {
+  if (/^(hi|hello|hey|thanks|thank you|good morning|good afternoon|good evening)\\b/.test(text)) {
     return true;
   }
 
@@ -54,7 +55,21 @@ function isShikaTravelRelated(
     return true;
   }
 
-  return SHIKA_TRAVEL_KEYWORDS.some((keyword) => text.includes(keyword));
+  if (SHIKA_TRAVEL_KEYWORDS.some((keyword) => text.includes(keyword))) {
+    return true;
+  }
+
+  // Contextual suggestion pills may ask about a dish or place without broad
+  // travel keywords (for example, "What is Jadoh?"). Use prior travel turns
+  // to classify follow-ups, but never count Shika's initial greeting.
+  const hasTravelContext = history.some((item) => {
+    const prior = item.content.toLowerCase();
+    if (item.role === "assistant" && /^(i’m shika|i'm shika)/i.test(item.content)) return false;
+    return SHIKA_TRAVEL_KEYWORDS.some((keyword) => prior.includes(keyword))
+      || Boolean(context.destination && prior.includes(context.destination.toLowerCase()));
+  });
+
+  return hasTravelContext && text.length <= 180 && (text.includes("?") || /^(tell me more|where is|where can i|explain|describe|what about|what does|who is|how do i)\\b/.test(text));
 }
 
 @Injectable()
@@ -337,7 +352,7 @@ Include one entry for each calendar day from check-in through the day before che
       "Find local food favourites",
       "Plan a relaxed day",
     ];
-    if (!isShikaTravelRelated(input.message, input.context)) {
+    if (!isShikaTravelRelated(input.message, input.context, input.history)) {
       return {
         reply: "I’m Shika, your Pravaas travel companion. I’m here to help with your trip—destinations, hotels, places to visit, food, routes, transport, itinerary ideas, and other travel questions. Ask me something about your trip and I’ll be happy to help!",
         suggestions: ["Suggest places to visit", "Find local food", "Help plan my itinerary"],
