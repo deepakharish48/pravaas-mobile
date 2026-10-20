@@ -88,6 +88,25 @@ export default function PravaasMap({ destination, places = [], route = null, cur
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [statusMessage, setStatusMessage] = useState("Loading map…");
 
+  async function geocodeDestination(googleApi: typeof google, map: google.maps.Map, query: string) {
+    const geocoder = new googleApi.maps.Geocoder();
+    const result = await geocoder.geocode({ address: query });
+    const location = result.results?.[0]?.geometry?.location;
+
+    if (!location) throw new Error(`We couldn't find "${query}". Try a city or destination name.`);
+
+    map.panTo(location);
+    map.setZoom(12);
+
+    if (markerRef.current) markerRef.current.setMap(null);
+    markerRef.current = new googleApi.maps.Marker({
+      map,
+      position: location,
+      title: query,
+      animation: googleApi.maps.Animation.DROP,
+    });
+  }
+
   useEffect(() => {
     let cancelled = false;
 
@@ -168,7 +187,7 @@ export default function PravaasMap({ destination, places = [], route = null, cur
         }
 
         if (currentLocation) {
-          currentMarkerRef.current = new googleApi.maps.Marker({
+          currentMarkerRef.current = new google.maps.Marker({
             map: mapRef.current,
             position: currentLocation,
             title: "Your current location",
@@ -234,24 +253,7 @@ export default function PravaasMap({ destination, places = [], route = null, cur
     void updateMap();
     return () => { cancelled = true; };
   }, [destination, places, route, currentLocation, status]);
-  async function geocodeDestination(googleApi: typeof google, map: google.maps.Map, query: string) {
-    const geocoder = new googleApi.maps.Geocoder();
-    const result = await geocoder.geocode({ address: query });
-    const location = result.results?.[0]?.geometry?.location;
 
-    if (!location) throw new Error(`We couldn't find "${query}". Try a city or destination name.`);
-
-    map.panTo(location);
-    map.setZoom(12);
-
-    if (markerRef.current) markerRef.current.setMap(null);
-    markerRef.current = new googleApi.maps.Marker({
-      map,
-      position: location,
-      title: query,
-      animation: googleApi.maps.Animation.DROP,
-    });
-  }
 
   return (
     <div className={`relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 ${className}`}>
