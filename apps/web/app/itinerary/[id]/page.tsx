@@ -18,6 +18,29 @@ type Tab = "discover" | "itinerary" | "saved" | "assistant";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type Place = { id: string; name: string; address: string; rating: number | null; category: string; url: string | null; location?: { lat: number; lng: number } | null };
 
+type SpeechRecognitionAlternativeLike = { transcript: string };
+type SpeechRecognitionResultLike = ArrayLike<SpeechRecognitionAlternativeLike> & { isFinal: boolean };
+type SpeechRecognitionEventLike = { resultIndex: number; results: ArrayLike<SpeechRecognitionResultLike> };
+type SpeechRecognitionErrorLike = { error: string };
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 const categories = [
   { name: "Sightseeing", icon: "🏛️", description: "Landmarks and local highlights" },
   { name: "Food & cafés", icon: "🍽️", description: "Local favourites and cafés" },
@@ -59,7 +82,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   const [places, setPlaces] = useState<Place[]>([]);
   const [placesBusy, setPlacesBusy] = useState(false);
   const [placesError, setPlacesError] = useState("");
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -156,12 +179,12 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
   function toggleListening() {
     setVoiceError("");
     if (listening) { recognitionRef.current?.stop?.(); setListening(false); return; }
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!SpeechRecognition) { setVoiceError("Voice input isn’t supported in this browser. You can still type to Shika."); return; }
     const recognition = new SpeechRecognition();
     recognition.lang = "en-IN"; recognition.interimResults = true; recognition.continuous = false;
     let finalTranscript = "";
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
       let interim = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
@@ -169,7 +192,7 @@ export default function ItineraryAgentPage({ params }: { params: Promise<{ id: s
       }
       setMessage((finalTranscript + interim).trim());
     };
-    recognition.onerror = (event: any) => { setVoiceError(event.error === "not-allowed" ? "Please allow microphone access to speak with Shika." : "I couldn’t hear that clearly. Please try again."); setListening(false); };
+    recognition.onerror = (event: SpeechRecognitionErrorLike) => { setVoiceError(event.error === "not-allowed" ? "Please allow microphone access to speak with Shika." : "I couldn’t hear that clearly. Please try again."); setListening(false); };
     recognition.onend = () => { setListening(false); if (finalTranscript.trim()) void sendMessage(finalTranscript.trim()); };
     recognitionRef.current = recognition; recognition.start(); setListening(true);
   }
