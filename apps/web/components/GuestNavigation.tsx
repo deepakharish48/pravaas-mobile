@@ -46,9 +46,8 @@ export default function GuestNavigation() {
     <>
       <header className="traveller-navigation sticky top-0 z-50 hidden border-b border-slate-200/90 bg-white/95 shadow-sm backdrop-blur md:block">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-          <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5" aria-label="Pravaas home">
-            <BrandLogo size={36} className="rounded-xl" priority />
-            <span className="text-lg font-bold tracking-tight text-slate-950">Pravaas</span>
+          <Link href="/dashboard" className="flex shrink-0 items-center" aria-label="Pravaas home">
+            <BrandLogo size={36} priority />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex min-w-0 flex-1 items-center gap-1">
