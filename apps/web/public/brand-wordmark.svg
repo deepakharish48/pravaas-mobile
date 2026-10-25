@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 120" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 120" role="img" aria-labelledby="title">
   <title id="title">Pravaas.</title>
-  <rect width="560" height="120" fill="none"/>
+  <rect width="440" height="120" fill="none"/>
   <text x="4" y="96" font-family="Arial, Helvetica, sans-serif" font-size="104" font-weight="800" letter-spacing="-4" fill="#101a30">Pravaas</text>
-  <circle cx="511" cy="88" r="10" fill="#3478f6"/>
+  <circle cx="405" cy="88" r="10" fill="#3478f6"/>
 </svg>
