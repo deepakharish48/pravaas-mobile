@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import BrandLogo from "@/components/BrandLogo";
+import BrandLogo from "@/components/BrandLogo";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 
@@ -79,9 +80,7 @@ export default function QRPage({
     <main className="traveller-workspace min-h-screen bg-slate-50 px-4 py-8 sm:py-12">
       <Container className="max-w-5xl">
         <header className="mx-auto mb-8 flex max-w-2xl flex-col items-center text-center sm:mb-10">
-          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <Image src="/logo.png" alt="Pravaas" width={36} height={36} priority />
-          </div>
+          <BrandLogo size={42} className="mb-5 h-10 w-auto" priority />
           <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-800">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" /> YOUR CHECK-IN PASS
           </span>
