@@ -2,6 +2,7 @@
 
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
 import Image from "next/image";
+import BrandLogo from "@/components/BrandLogo";
 import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
