@@ -3,6 +3,7 @@
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
 import Image from "next/image";
 import BrandLogo from "@/components/BrandLogo";
+import BrandLogo from "@/components/BrandLogo";
 import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api";
@@ -74,9 +75,7 @@ export default function UploadBookingPage() {
     <main className="traveller-workspace min-h-screen bg-slate-50 px-4 py-8 sm:py-12">
       <Container className="max-w-5xl">
         <header className="mx-auto mb-8 flex max-w-2xl flex-col items-center text-center sm:mb-10">
-          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <Image src="/logo.png" alt="Pravaas" width={36} height={36} priority />
-          </div>
+          <BrandLogo size={42} className="mb-5 h-10 w-auto" priority />
           <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold tracking-wide text-blue-800">
             <span aria-hidden="true">✦</span> YOUR TRIP, IN ONE PLACE
           </p>
