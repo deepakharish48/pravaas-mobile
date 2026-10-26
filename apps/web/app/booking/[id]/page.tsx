@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { api } from "@/lib/api";
 
+import BrandLogo from "@/components/BrandLogo";
 import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
@@ -86,13 +87,7 @@ export default function BookingPage({
 
         <div className="mb-8 flex flex-col items-center">
 
-          <Image
-            src="/logo.png"
-            alt="Pravaas"
-            width={64}
-            height={64}
-            className="mb-4"
-          />
+          <BrandLogo size={48} className="mb-4" />
 
           <h1 className="text-3xl font-bold">
             Booking Details
