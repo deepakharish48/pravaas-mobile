@@ -41,6 +41,16 @@ export class HotelController {
     return this.hotelService.saveCForm(id, body);
   }
 
+  @Get("bookings/:id/guests")
+  guestQrs(@Param("id") id: string) {
+    return this.hotelService.listGuestQrs(id);
+  }
+
+  @Post("bookings/:id/guests")
+  collectGuestQr(@Param("id") id: string, @Body() body: Record<string, unknown>) {
+    return this.hotelService.collectAdditionalGuestQr(id, body);
+  }
+
   @Post("checkin/:id")
   checkIn(
     @Param("id") id: string,
