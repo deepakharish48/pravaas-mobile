@@ -261,6 +261,80 @@ export class HotelService {
     };
   }
 
+
+  async collectAdditionalGuestQr(id: string, input: Record<string, unknown>) {
+    const booking = await this.prisma.booking.findUnique({ where: { id } });
+    if (!booking) throw new NotFoundException("Booking not found");
+
+    const guestName = String(input.guestName ?? "").trim();
+    const identityNumber = String(input.identityNumber ?? "").trim();
+    const qrPayload = String(input.qrPayload ?? "").trim();
+    const identityName = String(input.identityName ?? "").trim();
+    const identityType = String(input.identityType ?? "").trim();
+
+    if (!guestName || !qrPayload) {
+      throw new BadRequestException("Guest name and QR payload are required");
+    }
+
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(qrPayload) as Record<string, unknown>;
+    } catch {
+      throw new BadRequestException("Invalid guest QR payload");
+    }
+    if (parsed.type !== "pravaas_checkin" || parsed.bookingId !== id) {
+      throw new BadRequestException("This QR code does not belong to the selected booking");
+    }
+
+    if (identityNumber) {
+      const existing = await this.prisma.hotelGuestQr.findFirst({
+        where: { bookingId: id, identityNumber },
+      });
+      if (existing) throw new BadRequestException("This guest QR has already been collected");
+    }
+
+    return this.prisma.hotelGuestQr.create({
+      data: {
+        bookingId: id,
+        guestName,
+        identityType: identityType || null,
+        identityName: identityName || null,
+        identityNumber: identityNumber || null,
+        qrPayload,
+      },
+      select: {
+        id: true,
+        bookingId: true,
+        guestName: true,
+        identityType: true,
+        identityName: true,
+        identityNumber: true,
+        scannedAt: true,
+        checkedInAt: true,
+      },
+    });
+  }
+
+  async listGuestQrs(id: string) {
+    const booking = await this.prisma.booking.findUnique({ where: { id } });
+    if (!booking) throw new NotFoundException("Booking not found");
+    const guests = await this.prisma.hotelGuestQr.findMany({
+      where: { bookingId: id },
+      orderBy: { scannedAt: "asc" },
+      select: {
+        id: true,
+        bookingId: true,
+        guestName: true,
+        identityType: true,
+        identityName: true,
+        identityNumber: true,
+        scannedAt: true,
+        checkedInAt: true,
+      },
+    });
+    return { bookingId: id, additionalGuests: guests };
+  }
+
   async checkIn(id: string) {
     const booking = await this.prisma.booking.findUnique({
       where: {
