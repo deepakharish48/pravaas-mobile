@@ -60,10 +60,27 @@ export default function HotelCheckinContent() {
 
   async function collectAdditionalGuest() {
     if (!payload || !additionalFor) return;
-    if (booking.bookingId !== additionalFor) { alert("This QR code belongs to a different reservation. Please scan a QR for the same booking."); return; }
+    // Compare the scanned guest's booking with the hotel-side reservation.
+    let staffConfirmed = false;
     try {
+      const primaryBooking = await api(`/hotel/bookings/${additionalFor}`) as {
+        confirmationNumber?: string | null;
+      };
+      const primaryConfirmation = primaryBooking.confirmationNumber?.trim().toUpperCase() ?? "";
+      const scannedConfirmation = booking.confirmationNumber?.trim().toUpperCase() ?? "";
+      const hasMatchingConfirmation = Boolean(
+        primaryConfirmation && scannedConfirmation &&
+        primaryConfirmation === scannedConfirmation
+      );
+      if (!hasMatchingConfirmation) {
+        const accepted = window.confirm(
+          "The scanned guest has a different or missing reservation confirmation number. Please verify that the guest is part of this exact hotel reservation. The hotel and stay dates must also match. Confirm association?"
+        );
+        if (!accepted) return;
+        staffConfirmed = true;
+      }
       setLoading(true);
-      await api(`/hotel/bookings/${additionalFor}/guests`, { method: "POST", body: JSON.stringify({ guestName: booking.guestName, identityType: booking.identityType, identityName: booking.identityName, identityNumber: booking.identityNumber, qrPayload: payload }) });
+      await api(`/hotel/bookings/${additionalFor}/guests`, { method: "POST", body: JSON.stringify({ guestName: booking.guestName, identityType: booking.identityType, identityName: booking.identityName, identityNumber: booking.identityNumber, qrPayload: payload, staffConfirmed }) });
       alert("Additional guest QR collected and saved to this reservation.");
       router.push(`/hotel-booking/${additionalFor}`);
     } catch (err) { console.error(err); alert(err instanceof Error ? err.message : "Unable to save additional guest QR."); } finally { setLoading(false); }
