@@ -9,7 +9,6 @@ import BrandLogo from "@/components/BrandLogo";
 import Button from "@/components/UI/Button";
 import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
-import BrandLogo from "@/components/BrandLogo";
 
 type Booking = {
   id: string;
