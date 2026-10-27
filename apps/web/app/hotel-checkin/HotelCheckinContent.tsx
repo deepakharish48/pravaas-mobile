@@ -60,12 +60,18 @@ export default function HotelCheckinContent() {
 
   async function collectAdditionalGuest() {
     if (!payload || !additionalFor) return;
-    // The QR payload is the source of truth for the scanned guest's reservation.
+    // Compare the scanned guest's booking with the hotel-side reservation.
     let staffConfirmed = false;
     try {
-      const scanned = JSON.parse(payload) as BookingPayload;
-      const scannedConfirmation = scanned.confirmationNumber?.trim().toUpperCase() ?? "";
-      const hasMatchingConfirmation = Boolean(primaryConfirmation && scannedConfirmation && primaryConfirmation === scannedConfirmation);
+      const primaryBooking = await api(`/hotel/bookings/${additionalFor}`) as {
+        confirmationNumber?: string | null;
+      };
+      const primaryConfirmation = primaryBooking.confirmationNumber?.trim().toUpperCase() ?? "";
+      const scannedConfirmation = booking.confirmationNumber?.trim().toUpperCase() ?? "";
+      const hasMatchingConfirmation = Boolean(
+        primaryConfirmation && scannedConfirmation &&
+        primaryConfirmation === scannedConfirmation
+      );
       if (!hasMatchingConfirmation) {
         const accepted = window.confirm(
           "The scanned guest has a different or missing reservation confirmation number. Please verify that the guest is part of this exact hotel reservation. The hotel and stay dates must also match. Confirm association?"
