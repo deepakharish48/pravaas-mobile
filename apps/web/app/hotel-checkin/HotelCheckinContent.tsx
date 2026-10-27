@@ -231,14 +231,13 @@ export default function HotelCheckinContent() {
 
           <Button
             variant="secondary"
-            onClick={() =>
-              router.push("/hotel-dashboard")
-            }
+            onClick={() => router.push(`/hotel-scan?bookingId=${encodeURIComponent(booking.bookingId)}`)}
           >
-            Cancel
+            Collect 2nd Guest QR
           </Button>
 
         </div>
+        )}
 
       </Container>
 
