@@ -28,6 +28,7 @@ export default function HotelCheckinContent() {
   const params = useSearchParams();
 
   const payload = params.get("payload");
+  const additionalFor = params.get("additionalFor");
 
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +58,7 @@ export default function HotelCheckinContent() {
 
   const booking: BookingPayload = JSON.parse(payload);
 
-  async function approveCheckin() {
+  async function collectAdditionalGuest() {\n    if (!payload || !additionalFor) return;\n    if (booking.bookingId !== additionalFor) { alert("This QR code belongs to a different reservation. Please scan a QR for the same booking."); return; }\n    try {\n      setLoading(true);\n      await api(`/hotel/bookings/${additionalFor}/guests`, { method: "POST", body: JSON.stringify({ guestName: booking.guestName, identityType: booking.identityType, identityName: booking.identityName, identityNumber: booking.identityNumber, qrPayload: payload }) });\n      alert("Additional guest QR collected and saved to this reservation.");\n      router.push(`/hotel-booking/${additionalFor}`);\n    } catch (err) { console.error(err); alert(err instanceof Error ? err.message : "Unable to save additional guest QR."); } finally { setLoading(false); }\n  }\n\n  async function approveCheckin() {
     try {
       setLoading(true);
 
@@ -200,7 +201,7 @@ export default function HotelCheckinContent() {
 
         </Card>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {additionalFor ? (\n          <div className="mt-6 grid gap-3 sm:grid-cols-2">\n            <Button onClick={collectAdditionalGuest} disabled={loading}>{loading ? "Saving..." : "Save Additional Guest QR"}</Button>\n            <Button variant="secondary" onClick={() => router.push(`/hotel-booking/${additionalFor}`)}>Cancel</Button>\n          </div>\n        ) : (\n        <div className="mt-6 grid gap-3 sm:grid-cols-2">
 
           <Button
             onClick={approveCheckin}
