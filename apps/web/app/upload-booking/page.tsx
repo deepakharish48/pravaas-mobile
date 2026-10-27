@@ -1,8 +1,6 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
-import Image from "next/image";
-import BrandLogo from "@/components/BrandLogo";
 import BrandLogo from "@/components/BrandLogo";
 import { useRouter } from "next/navigation";
 

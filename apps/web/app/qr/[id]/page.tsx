@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import BrandLogo from "@/components/BrandLogo";
 import BrandLogo from "@/components/BrandLogo";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
