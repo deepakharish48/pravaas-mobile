@@ -10,6 +10,7 @@ import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import HotelNavigation from "@/components/HotelNavigation";
 
+type AdditionalGuest = { id: string; guestName: string; identityType: string | null; identityName: string | null; identityNumber: string | null; scannedAt: string; checkedInAt: string | null };
 type Booking = { id: string; hotelName: string | null; guestName: string | null; confirmationNumber: string | null; checkIn: string | null; checkOut: string | null; roomType: string | null; numberOfGuests: number | null; totalPrice: string | null; currency: string | null; status: string; qrCode: string | null };
 
 function Detail({ label, value }: { label: string; value: string | number | null }) {
@@ -21,8 +22,9 @@ export default function HotelBookingPage() {
   const router = useRouter();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [additionalGuests, setAdditionalGuests] = useState<AdditionalGuest[]>([]);
 
-  useEffect(() => { if (id) api(`/hotel/bookings/${id}`).then(setBooking).catch(console.error).finally(() => setLoading(false)); }, [id]);
+  useEffect(() => { if (id) { Promise.all([api(`/hotel/bookings/${id}`), api(`/hotel/bookings/${id}/guests`)]).then(([bookingData, guestData]) => { setBooking(bookingData); setAdditionalGuests(guestData.additionalGuests ?? []); }).catch(console.error).finally(() => setLoading(false)); } }, [id]);
 
   if (loading) return <main className="hotel-workspace flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Loading booking…</main>;
   if (!booking) return <main className="flex min-h-screen items-center justify-center bg-[#f6f8fc] text-slate-500">Booking not found.</main>;
@@ -38,6 +40,7 @@ export default function HotelBookingPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-6">
           <Card><h2 className="mb-5 text-lg font-bold text-slate-950">Stay details</h2><div className="grid gap-5 sm:grid-cols-2"><Detail label="Check-in" value={booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : null}/><Detail label="Check-out" value={booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : null}/><Detail label="Room type" value={booking.roomType}/><Detail label="Guests" value={booking.numberOfGuests}/><Detail label="Total price" value={booking.totalPrice ? `${booking.totalPrice} ${booking.currency ?? ""}` : null}/><Detail label="Status" value={booking.status}/></div></Card>
+          <Card><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-lg font-bold text-slate-950">Additional guest QR codes</h2><p className="mt-1 text-sm text-slate-500">Guest QR records collected for this reservation.</p></div><Button onClick={() => router.push(`/hotel-scan?bookingId=${encodeURIComponent(String(id))}`)}>Collect 2nd Guest QR</Button></div>{additionalGuests.length ? <div className="mt-4 divide-y divide-slate-100">{additionalGuests.map((guest, index) => <div key={guest.id} className="py-3"><p className="font-semibold text-slate-900">Guest {index + 2}: {guest.guestName}</p><p className="mt-1 text-sm text-slate-500">Identity: {guest.identityType ?? "--"} · {guest.identityNumber ?? "Number not provided"}</p><p className="mt-1 text-xs text-slate-400">QR collected {new Date(guest.scannedAt).toLocaleString()}</p></div>)}</div> : <p className="mt-4 text-sm text-slate-500">No additional guest QR has been collected yet.</p>}</Card>
           {booking.qrCode && <Card><h2 className="mb-4 text-lg font-bold text-slate-950">Guest QR</h2><div className="flex justify-center"><img src={booking.qrCode} alt="Booking QR" className="h-56 w-56 rounded-xl border border-slate-200 p-2" /></div></Card>}
         </div>
         <aside className="h-fit space-y-3 lg:sticky lg:top-24">

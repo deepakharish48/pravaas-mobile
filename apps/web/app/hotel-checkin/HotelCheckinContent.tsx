@@ -28,6 +28,7 @@ export default function HotelCheckinContent() {
   const params = useSearchParams();
 
   const payload = params.get("payload");
+  const additionalFor = params.get("additionalFor");
 
   const [loading, setLoading] = useState(false);
 
@@ -56,6 +57,17 @@ export default function HotelCheckinContent() {
   }
 
   const booking: BookingPayload = JSON.parse(payload);
+
+  async function collectAdditionalGuest() {
+    if (!payload || !additionalFor) return;
+    if (booking.bookingId !== additionalFor) { alert("This QR code belongs to a different reservation. Please scan a QR for the same booking."); return; }
+    try {
+      setLoading(true);
+      await api(`/hotel/bookings/${additionalFor}/guests`, { method: "POST", body: JSON.stringify({ guestName: booking.guestName, identityType: booking.identityType, identityName: booking.identityName, identityNumber: booking.identityNumber, qrPayload: payload }) });
+      alert("Additional guest QR collected and saved to this reservation.");
+      router.push(`/hotel-booking/${additionalFor}`);
+    } catch (err) { console.error(err); alert(err instanceof Error ? err.message : "Unable to save additional guest QR."); } finally { setLoading(false); }
+  }
 
   async function approveCheckin() {
     try {
@@ -200,6 +212,12 @@ export default function HotelCheckinContent() {
 
         </Card>
 
+        {additionalFor ? (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <Button onClick={collectAdditionalGuest} disabled={loading}>{loading ? "Saving..." : "Save Additional Guest QR"}</Button>
+            <Button variant="secondary" onClick={() => router.push(`/hotel-booking/${additionalFor}`)}>Cancel</Button>
+          </div>
+        ) : (
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
 
           <Button
@@ -213,14 +231,13 @@ export default function HotelCheckinContent() {
 
           <Button
             variant="secondary"
-            onClick={() =>
-              router.push("/hotel-dashboard")
-            }
+            onClick={() => router.push(`/hotel-scan?bookingId=${encodeURIComponent(booking.bookingId)}`)}
           >
-            Cancel
+            Collect 2nd Guest QR
           </Button>
 
         </div>
+        )}
 
       </Container>
 
