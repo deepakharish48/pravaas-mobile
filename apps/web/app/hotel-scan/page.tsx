@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BrowserQRCodeReader } from "@zxing/browser";
@@ -10,7 +10,7 @@ import Card from "@/components/UI/Card";
 import Container from "@/components/UI/Container";
 import HotelNavigation from "@/components/HotelNavigation";
 
-export default function HotelScanPage() {
+function HotelScanContent() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -37,7 +37,7 @@ export default function HotelScanPage() {
     }
     startScanner();
     return () => { controls?.stop(); controls?.dispose?.(); };
-  }, [router]);
+  }, [router, targetBookingId]);
 
   return <main className="hotel-workspace min-h-screen bg-[#f6f8fc] lg:pl-64">
     <HotelNavigation />
@@ -49,4 +49,18 @@ export default function HotelScanPage() {
       </div>
     </Container>
   </main>;
+}
+
+export default function HotelScanPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center bg-[#f6f8fc] text-slate-500">
+          Loading...
+        </main>
+      }
+    >
+      <HotelScanContent />
+    </Suspense>
+  );
 }
