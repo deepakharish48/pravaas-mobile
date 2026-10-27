@@ -55,7 +55,8 @@ model Booking {
 
   qrCode             String?
 
-  guestQrs           HotelGuestQr[]
+  guestQrs           HotelGuestQr[] @relation("HotelReservationGuests")
+  sourceGuestQrs     HotelGuestQr[] @relation("GuestSourceBooking")
 
   cForm              CForm?
 
@@ -111,19 +112,23 @@ enum VerificationStatus {
 }
 
 model HotelGuestQr {
-  id             String   @id @default(uuid())
-  bookingId      String
-  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  guestName      String
-  identityType   String?
-  identityName   String?
-  identityNumber String?
-  qrPayload      String
-  scannedAt      DateTime @default(now())
-  checkedInAt    DateTime?
+  id               String   @id @default(uuid())
+  bookingId        String
+  booking          Booking  @relation("HotelReservationGuests", fields: [bookingId], references: [id], onDelete: Cascade)
+  sourceBookingId  String?
+  sourceBooking    Booking? @relation("GuestSourceBooking", fields: [sourceBookingId], references: [id], onDelete: SetNull)
+  guestName        String
+  identityType     String?
+  identityName     String?
+  identityNumber   String?
+  qrPayload        String
+  scannedAt        DateTime @default(now())
+  checkedInAt      DateTime?
 
   @@unique([bookingId, identityNumber])
+  @@unique([bookingId, sourceBookingId])
   @@index([bookingId])
+  @@index([sourceBookingId])
 }
 
 model CForm {
