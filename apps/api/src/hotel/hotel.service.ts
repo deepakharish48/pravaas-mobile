@@ -282,20 +282,82 @@ export class HotelService {
     } catch {
       throw new BadRequestException("Invalid guest QR payload");
     }
-    if (parsed.type !== "pravaas_checkin" || parsed.bookingId !== id) {
-      throw new BadRequestException("This QR code does not belong to the selected booking");
+    if (
+      parsed.type !== "pravaas_checkin" ||
+      typeof parsed.bookingId !== "string" ||
+      !parsed.bookingId
+    ) {
+      throw new BadRequestException("Invalid Pravaas guest QR code");
+    }
+
+    if (parsed.bookingId === id) {
+      throw new BadRequestException("Scan a different guest's QR code, not the primary guest's QR again");
+    }
+
+    const sourceBooking = await this.prisma.booking.findUnique({
+      where: { id: parsed.bookingId },
+    });
+    if (!sourceBooking) {
+      throw new BadRequestException("The booking associated with this QR could not be found");
+    }
+
+    const normalize = (value: unknown) =>
+      typeof value === "string" ? value.trim().toLocaleLowerCase() : "";
+    const primaryConfirmation = normalize(booking.confirmationNumber).toUpperCase();
+    const guestConfirmation = normalize(sourceBooking.confirmationNumber).toUpperCase();
+    const sameConfirmation = Boolean(
+      primaryConfirmation && guestConfirmation &&
+      primaryConfirmation === guestConfirmation
+    );
+    const sameHotelAndDates = Boolean(
+      normalize(booking.hotelName) &&
+      normalize(booking.hotelName) === normalize(sourceBooking.hotelName) &&
+      dateOnly(booking.checkIn) &&
+      dateOnly(booking.checkIn) === dateOnly(sourceBooking.checkIn) &&
+      dateOnly(booking.checkOut) &&
+      dateOnly(booking.checkOut) === dateOnly(sourceBooking.checkOut)
+    );
+
+    if (sameConfirmation) {
+      // A matching confirmation number is the strongest signal, but reject
+      // contradictory hotel or date data rather than silently linking records.
+      if (
+        (normalize(booking.hotelName) && normalize(sourceBooking.hotelName) &&
+          normalize(booking.hotelName) !== normalize(sourceBooking.hotelName)) ||
+        (booking.checkIn && sourceBooking.checkIn &&
+          dateOnly(booking.checkIn) !== dateOnly(sourceBooking.checkIn)) ||
+        (booking.checkOut && sourceBooking.checkOut &&
+          dateOnly(booking.checkOut) !== dateOnly(sourceBooking.checkOut))
+      ) {
+        throw new BadRequestException("The confirmation number matches, but the hotel or stay dates differ. Please verify the reservation details.");
+      }
+    } else {
+      if (!sameHotelAndDates) {
+        throw new BadRequestException("This QR does not match the selected reservation's hotel and stay dates.");
+      }
+      if (input.staffConfirmed !== true) {
+        throw new BadRequestException("Confirmation number is missing or different. Hotel staff must explicitly confirm that the guest belongs to this reservation.");
+      }
     }
 
     if (identityNumber) {
       const existing = await this.prisma.hotelGuestQr.findFirst({
         where: { bookingId: id, identityNumber },
       });
-      if (existing) throw new BadRequestException("This guest QR has already been collected");
+      if (existing) throw new BadRequestException("This guest identity has already been collected for this reservation");
+    }
+
+    const existingSource = await this.prisma.hotelGuestQr.findFirst({
+      where: { bookingId: id, sourceBookingId: sourceBooking.id },
+    });
+    if (existingSource) {
+      throw new BadRequestException("This guest booking has already been collected for this reservation");
     }
 
     return this.prisma.hotelGuestQr.create({
       data: {
         bookingId: id,
+        sourceBookingId: sourceBooking.id,
         guestName,
         identityType: identityType || null,
         identityName: identityName || null,
